@@ -4,10 +4,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class HomeController {
+public class MovieController {
 	
-	@RequestMapping("/")
-	public String showHomePage() {
-		return "home";
+	@RequestMapping(value="/movies")
+	public void populateData() {
+		
 	}
+
 }
