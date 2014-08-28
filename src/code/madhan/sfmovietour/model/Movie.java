@@ -1,22 +1,30 @@
 package code.madhan.sfmovietour.model;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Document(collection="movies")
 public class Movie {
 	
-	private String title;
+	@Id
+	private String id;
 	
 	@JsonProperty("actor_1")
 	private String actorOne;
 	
 	@JsonProperty("actor_2")
 	private String actorTwo;
-	private String distributor;
-	private String director;
-	private String writer;
 	
 	@JsonProperty("production_company")
 	private String productionCompany;
+	
+	private String title;
+	private String distributor;
+	private String director;
+	private String writer;
 	private String locations;
 	
 	public String getTitle() {
@@ -67,6 +75,12 @@ public class Movie {
 	public void setLocations(String locations) {
 		this.locations = locations;
 	}
-
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	
 	
 }
