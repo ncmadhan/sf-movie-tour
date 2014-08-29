@@ -2,9 +2,17 @@ package code.madhan.sfmovietour.model;
 
 public class Location {
 	
+	String address;
+	String funFacts;
 	double latitude;
 	double longitude;
 	String neighborhood;
+	
+	public Location (String address, String funFacts) {
+		this.address = address;
+		this.funFacts = funFacts;
+	}
+	
 	public double getLatitude() {
 		return latitude;
 	}
@@ -23,7 +31,17 @@ public class Location {
 	public void setNeighborhood(String neighborhood) {
 		this.neighborhood = neighborhood;
 	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getFunFacts() {
+		return funFacts;
+	}
+	public void setFunFacts(String funFacts) {
+		this.funFacts = funFacts;
+	}
 	
-	
-
 }

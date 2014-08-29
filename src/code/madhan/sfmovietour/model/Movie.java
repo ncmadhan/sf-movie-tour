@@ -1,9 +1,14 @@
 package code.madhan.sfmovietour.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Document(collection="movies")
@@ -25,7 +30,15 @@ public class Movie {
 	private String distributor;
 	private String director;
 	private String writer;
-	private String locations;
+	
+	@JsonProperty("locations")
+	private String locationAddress;
+	
+	@JsonProperty("fun_facts")
+	private String funFacts;
+	
+	@JsonIgnore
+	private List<Location> movieLocations = new ArrayList<Location>();
 	
 	public String getTitle() {
 		return title;
@@ -69,18 +82,32 @@ public class Movie {
 	public void setProductionCompany(String productionCompany) {
 		this.productionCompany = productionCompany;
 	}
-	public String getLocations() {
-		return locations;
-	}
-	public void setLocations(String locations) {
-		this.locations = locations;
-	}
+	
 	public String getId() {
 		return id;
 	}
 	public void setId(String id) {
 		this.id = id;
 	}
+	public String getFunFacts() {
+		return funFacts;
+	}
+	public void setFunFacts(String funFacts) {
+		this.funFacts = funFacts;
+	}
+	public String getLocationAddress() {
+		return locationAddress;
+	}
+	public void setLocationAddress(String locationAddress) {
+		this.locationAddress = locationAddress;
+	}
+	public List<Location> getMovieLocations() {
+		return movieLocations;
+	}
+	public void setMovieLocations(List<Location> movieLocations) {
+		this.movieLocations = movieLocations;
+	}
+	
 	
 	
 }
