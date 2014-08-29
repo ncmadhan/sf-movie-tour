@@ -35,7 +35,7 @@ public class SFOpenPopulateMovieDataServiceImpl implements PopulateMovieDataServ
 		PopulateMovieDataHelper populateMovieDataHelper = new PopulateMovieDataHelper();
 		
 		// Fetch all rows from the SF Movie API
-		List<Movie> rawMovieLocationDataSet = populateMovieDataHelper.fetchRawMovieDataFromSFOpenAPI();
+		List<Movie> rawMovieLocationDataSet = populateMovieDataHelper.fetchSFMovieApiResponse();
 		
 		List<Movie> populatedMovieList = new ArrayList<Movie>();
 		

@@ -7,6 +7,7 @@ public class Location {
 	double latitude;
 	double longitude;
 	String neighborhood;
+	boolean isApproximate = false;
 	
 	public Location (String address, String funFacts) {
 		this.address = address;
@@ -43,5 +44,14 @@ public class Location {
 	public void setFunFacts(String funFacts) {
 		this.funFacts = funFacts;
 	}
+
+	public boolean isApproximate() {
+		return isApproximate;
+	}
+
+	public void setApproximate(boolean isApproximate) {
+		this.isApproximate = isApproximate;
+	}
+	
 	
 }

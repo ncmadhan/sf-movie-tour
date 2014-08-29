@@ -1,12 +1,16 @@
 package code.madhan.sfmovietour.helper;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -20,7 +24,9 @@ import code.madhan.sfmovietour.util.AppConstants;
 
 /**
  * 
- * @author maddy Helper Class for populating movie data from APIs into DB
+ * @author maddy 
+ * 
+ * Helper Class for populating movie data from APIs into DB
  */
 public class PopulateMovieDataHelper {
 
@@ -31,43 +37,63 @@ public class PopulateMovieDataHelper {
 	 * @return Location object
 	 */
 	public Location fetchLocationDetails(String address, String funFacts) {
-		RestTemplate client = new RestTemplate();
+		
+		//address = address + " SF";
+		
+		if (address.indexOf("(") > 0 && address.indexOf(")") > 0) {
+			address = address.substring(address.indexOf("(")+1, address.indexOf(")"));
+		}
+		
+		address += " SF";
+		
 		Location location = new Location(address, funFacts);
-		String geocodeRequestUrl;
+		String geocodeResponseString;
 		try {
-
-			/**
-			 * Fetch location details from address using Google Geocoding
-			 * service
-			 */
-			geocodeRequestUrl = AppConstants.GEOCODING_SERVICE_ENDPOINT
-					+ URLEncoder.encode(address, "UTF-8");
-			String geocodeResponseString = client.getForObject(
-					geocodeRequestUrl, String.class);
+			
+			geocodeResponseString = fetchGeocodeApiResponse(address, false);
 			System.out.println("Response is " + geocodeResponseString);
 
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode rootNode = mapper.readTree(geocodeResponseString);
 			
+			JsonNode refinedRootNode = null;
 			
-			if (rootNode.path("status") != null && rootNode.path("status").asText().equals("ZERO_RESULTS")) {
-				return null;
+			// Check if location is empty or approximate
+			if (isLocationEmpty(rootNode) || isLocationApproximate(rootNode)) {
+				
+				// Attempt to refine the location
+				refinedRootNode = attemptToRefineLocation(address);
+				// refinedRootNode is returned as null if refining failed
+				
 			}
+			
+			
+			if (refinedRootNode == null && isLocationEmpty(rootNode)) {
+				// this means that refining failed, and Google's API also sent ZERO_RESULTS
+				location.setLatitude(0.0);
+				location.setLongitude(0.0);
+				location.setNeighborhood("NA");
+				return location;
+			}
+			else if (refinedRootNode == null && isLocationApproximate(rootNode)) {
+				// this means that refining failed. original location fetched was approximate
+				location.setApproximate(true);
+			}
+			else if (refinedRootNode != null) {
+				// refining has succeeded. Set rootNode to the new refinedRootNode
+				rootNode = refinedRootNode;
+			}
+			
 			Iterator<JsonNode> itr = rootNode.path("results").path(0)
 					.path("address_components").getElements();
 
-			/**
-			 * Get lat and long
-			 */
+			//Get lat and long
 			location.setLatitude(rootNode.path("results").path(0)
 					.path("geometry").path("location").path("lat").asDouble());
 			location.setLongitude(rootNode.path("results").path(0)
 					.path("geometry").path("location").path("lng").asDouble());
 
-			/**
-			 * Iterate over the address_component array to find the Neighborhood
-			 * name
-			 */
+			// Iterate over the address_component array to find the Neighborhood name
 			boolean neighborhoodFetched = false;
 			do {
 				JsonNode addressComponent = itr.next();
@@ -90,8 +116,112 @@ public class PopulateMovieDataHelper {
 
 		return null;
 	}
-
-	public List<Movie> fetchRawMovieDataFromSFOpenAPI() {
+	
+	
+	/**
+	 * Check if the response received the Google Geocode API 
+	 * is empty (location_type:ZERO_RESULTS) or approximate (location_type:APPROXIMATE)
+	 * @param rootNode
+	 * @return
+	 */
+	public boolean isLocationEmpty(JsonNode rootNode) {
+		if ((rootNode.path("status") != null && rootNode.path("status")
+				.asText().equals("ZERO_RESULTS"))) {
+			return true;
+		} 
+		
+		return false;
+	}
+	
+	public boolean isLocationApproximate(JsonNode rootNode) {
+		if ((rootNode.path("results").path(0).path("formatted_address").asText().equals("San Francisco, CA, USA"))) {
+			return true;
+		}
+		return false;
+	}
+	
+	
+	
+	/**
+	 * Attempt to provide better accuracy location data for the address
+	 * 
+	 * @param address - The address that has previously given empty or approximate results
+	 * @return JsonNode of the Geocode API response parsed
+	 * @throws JsonProcessingException
+	 * @throws IOException
+	 */
+	public JsonNode attemptToRefineLocation(String address) throws JsonProcessingException, IOException {
+		System.out.println("Address " + address + " has to be refined");
+		String geocodeResponseString;
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode rootNode = null;
+		// Check if the address is present within brackets
+		/*if (address.indexOf("(") > 0 && address.indexOf("(") > 0) {
+			address = address.substring(address.indexOf("("), address.indexOf("("));
+			address += " SF";
+		}
+		
+		*/
+		
+		
+		String attemptAddress = "";
+		if (address.contains("St")) {
+		
+			String[] words = address.split(" ");
+			
+			int i = -1;
+			for (String word: words) {
+				i++;
+				if (word.contains("St") && i != 0) {
+					attemptAddress = words[i-1] + " " + words[i];
+					continue;
+				}
+			}
+			
+			attemptAddress += " SF";
+			System.out.println("Street name only address is " + attemptAddress);
+			geocodeResponseString = fetchGeocodeApiResponse(attemptAddress, true);
+			rootNode = mapper.readTree(geocodeResponseString);
+			System.out.println("Response after extracting Street name: " + geocodeResponseString);
+		}
+		else {
+			return null;
+		}
+		
+		if (isLocationEmpty(rootNode) || isLocationApproximate(rootNode)) {
+			return null;
+		}
+		
+		return rootNode;
+	}
+	
+	
+	/**
+	 * Fetch the response from Google Geocode API
+	 * 
+	 * @param address - The raw address fetched from API
+	 * @param addressNotFoundDefaultToSF - If addressNotFoundDefaultToSF is true, then the location defaults to the center of SF when there is no match for the address 
+	 * @return Geocode API response Json as String
+	 * @throws UnsupportedEncodingException
+	 */
+	public String fetchGeocodeApiResponse(String address, boolean addressNotFoundDefaultToSF) throws UnsupportedEncodingException {
+		RestTemplate client = new RestTemplate();
+		StringBuilder geocodeRequestUrl = new StringBuilder(AppConstants.GEOCODING_SERVICE_ENDPOINT).append(URLEncoder.encode(address, "UTF-8"));
+		/*if (addressNotFoundDefaultToSF) {
+			geocodeRequestUrl.append("&components=").append(URLEncoder.encode("locality:SF|country:US", "UTF-8"));
+		}*/
+		
+		String geocodeResponseString = client.getForObject(
+				geocodeRequestUrl.toString(), String.class);
+		return geocodeResponseString;
+	}
+	
+	
+	/**
+	 * Fetch the complete list of movies in its raw form from SF Open Data API
+	 * @return
+	 */
+	public List<Movie> fetchSFMovieApiResponse() {
 		RestTemplate client = new RestTemplate();
 		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
 		messageConverters.add(new MappingJacksonHttpMessageConverter());
@@ -130,7 +260,7 @@ public class PopulateMovieDataHelper {
 			// Test Data
 			List<Movie> moviePageList = new ArrayList<Movie>();
 			String sfDataRequestUrl = AppConstants.SF_DATA_ENDPOINT_URL
-					+ "?$order=" + "title" + "&$offset=0&$limit=20";
+					+ "?$order=" + "title" + "&$offset=0&$limit=500";
 			
 			moviePageList = Arrays.asList(client.getForObject(
 					sfDataRequestUrl, Movie[].class));
