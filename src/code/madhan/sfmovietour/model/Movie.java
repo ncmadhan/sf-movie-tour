@@ -3,12 +3,13 @@ package code.madhan.sfmovietour.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Document(collection="movies")
@@ -31,15 +32,30 @@ public class Movie {
 	private String director;
 	private String writer;
 	
+	@JsonProperty("release_year")
+	private int releaseYear;
+	
 	@JsonProperty("locations")
+	@Transient
 	private String locationAddress;
 	
 	@JsonProperty("fun_facts")
+	@Transient
 	private String funFacts;
+	
+	private MovieAdditionalInfo additionalInfo;
+	private Facet facets = new Facet();
 	
 	@JsonIgnore
 	private List<Location> movieLocations = new ArrayList<Location>();
 	
+	
+	public MovieAdditionalInfo getAdditionalInfo() {
+		return additionalInfo;
+	}
+	public void setAdditionalInfo(MovieAdditionalInfo additionalInfo) {
+		this.additionalInfo = additionalInfo;
+	}
 	public String getTitle() {
 		return title;
 	}
@@ -106,6 +122,18 @@ public class Movie {
 	}
 	public void setMovieLocations(List<Location> movieLocations) {
 		this.movieLocations = movieLocations;
+	}
+	public Facet getFacets() {
+		return facets;
+	}
+	public void setFacets(Facet facets) {
+		this.facets = facets;
+	}
+	public int getReleaseYear() {
+		return releaseYear;
+	}
+	public void setReleaseYear(int releaseYear) {
+		this.releaseYear = releaseYear;
 	}
 	
 	

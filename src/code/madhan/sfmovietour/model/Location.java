@@ -4,17 +4,20 @@ public class Location {
 	
 	String address;
 	String funFacts;
-	double latitude;
+	GeoJsonCoordinates locationCoordinates;
+	/*double latitude;
 	double longitude;
-	String neighborhood;
+	*/
+	
+	String neighbourhood;
 	boolean isApproximate = false;
 	
 	public Location (String address, String funFacts) {
 		this.address = address;
 		this.funFacts = funFacts;
-	}
+	}	
 	
-	public double getLatitude() {
+	/*public double getLatitude() {
 		return latitude;
 	}
 	public void setLatitude(double latitude) {
@@ -25,12 +28,12 @@ public class Location {
 	}
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
+	}*/
+	public String getNeighbourhood() {
+		return neighbourhood;
 	}
-	public String getNeighborhood() {
-		return neighborhood;
-	}
-	public void setNeighborhood(String neighborhood) {
-		this.neighborhood = neighborhood;
+	public void setNeighborhood(String neighbourhood) {
+		this.neighbourhood = neighbourhood;
 	}
 	public String getAddress() {
 		return address;
@@ -51,6 +54,14 @@ public class Location {
 
 	public void setApproximate(boolean isApproximate) {
 		this.isApproximate = isApproximate;
+	}
+
+	public GeoJsonCoordinates getLocationCoordinates() {
+		return locationCoordinates;
+	}
+
+	public void setLocationCoordinates(GeoJsonCoordinates locationCoordinates) {
+		this.locationCoordinates = locationCoordinates;
 	}
 	
 	

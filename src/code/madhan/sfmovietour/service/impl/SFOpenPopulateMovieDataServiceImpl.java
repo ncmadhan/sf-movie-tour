@@ -1,23 +1,14 @@
 package code.madhan.sfmovietour.service.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
-import scala.annotation.meta.getter;
 import code.madhan.sfmovietour.helper.PopulateMovieDataHelper;
+import code.madhan.sfmovietour.model.Facet;
 import code.madhan.sfmovietour.model.Location;
 import code.madhan.sfmovietour.model.Movie;
 import code.madhan.sfmovietour.service.PopulateMovieDataService;
@@ -34,6 +25,8 @@ public class SFOpenPopulateMovieDataServiceImpl implements PopulateMovieDataServ
 		System.out.println("Autowiring working http://data.sfgov.org/resource/yitu-d5am.json");
 		PopulateMovieDataHelper populateMovieDataHelper = new PopulateMovieDataHelper();
 		
+		
+		try {
 		// Fetch all rows from the SF Movie API
 		List<Movie> rawMovieLocationDataSet = populateMovieDataHelper.fetchSFMovieApiResponse();
 		
@@ -53,6 +46,7 @@ public class SFOpenPopulateMovieDataServiceImpl implements PopulateMovieDataServ
 			 */
 			String prevMovie = "";
 			Movie populatedMovie = null; // this object will represent a single movie with its multiple locations populated in it.
+			
 			for (Movie curMovie: rawMovieLocationDataSet) {
 				
 				if (!curMovie.getTitle().equals(prevMovie)) { // if the current row indicates a new movie
@@ -61,6 +55,7 @@ public class SFOpenPopulateMovieDataServiceImpl implements PopulateMovieDataServ
 					}
 					
 					populatedMovie = curMovie; // after adding the populated movie, set the currently read movie as the new populated movie (Because this is a new movie)
+					populatedMovie.getFacets().getReleasedDecade().add(populateMovieDataHelper.getPeriodFromYear(curMovie.getReleaseYear()));
 					
 					System.out.println("Cur Movie: " + curMovie.getTitle());
 					System.out.println("Cur Movie: " + curMovie.getLocationAddress());
@@ -68,34 +63,45 @@ public class SFOpenPopulateMovieDataServiceImpl implements PopulateMovieDataServ
 					// Some rows do not have location data in the original data set
 					if (curMovie.getLocationAddress() == null || curMovie.getLocationAddress().trim().isEmpty()) {
 						populatedMovie.getMovieLocations().add(new Location("<Unknown>", curMovie.getFunFacts()));
+						populatedMovie.getFacets().getNeighbourhood().add("Unknown");
 					}
 					else {
 					Location location = populateMovieDataHelper.fetchLocationDetails(curMovie.getLocationAddress(), curMovie.getFunFacts());
 					populatedMovie.getMovieLocations().add(location); // fetch and add the location details for the current movie to the location list
+					populatedMovie.getFacets().getNeighbourhood().add(location.getNeighbourhood() != null && !location.getNeighbourhood().trim().isEmpty() ? location.getNeighbourhood() : "Unknown");
 					}
 				}
  				else { // this indicates that the previous row and currently fetched row belong to the same movie. So we just add the location to the list
  					if (curMovie.getLocationAddress() == null || curMovie.getLocationAddress().trim().isEmpty()) {
 						populatedMovie.getMovieLocations().add(new Location("<Unknown>", curMovie.getFunFacts()));
+						populatedMovie.getFacets().getNeighbourhood().add("Unknown");
 					}
 					else {
 					Location location = populateMovieDataHelper.fetchLocationDetails(curMovie.getLocationAddress(), curMovie.getFunFacts());
 					populatedMovie.getMovieLocations().add(location); // fetch and add the location details for the current movie to the location list
+					populatedMovie.getFacets().getNeighbourhood().add(location.getNeighbourhood() != null && !location.getNeighbourhood().trim().isEmpty() ? location.getNeighbourhood() : "Unknown");
 					}
 				}
 				
 				prevMovie = curMovie.getTitle();
 			}
 			
+			
 			// After the full iteration is done, the last populatedMovie needs to be added into the movies list
 			if (populatedMovie != null) {
 				populatedMovieList.add(populatedMovie);
 			}
 			
+			populatedMovieList = populateMovieDataHelper.populateAdditionalMovieInfo(populatedMovieList);
 			mongoOperation.insert(populatedMovieList, Movie.class);
 		}
 		
-		System.out.println(populatedMovieList.size());
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Error populating Movie data");
+		}
+		
 	}
 
 	public void setMongoOperation(MongoOperations mongoOperation) {

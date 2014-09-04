@@ -15,12 +15,13 @@
 	<context:annotation-config></context:annotation-config>
 	
 	<bean name="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="prefix" value="/WEB-INF/jsps/"></property>
+		<property name="prefix" value="/WEB-INF/views/"></property>
 		<property name="suffix" value=".jsp"></property>
 	</bean>
 	
 	<mongo:mongo host="127.0.0.1" port="27017" />
 	<mongo:db-factory dbname="sfmovietour" />
+	<mongo:repositories base-package="code.madhan.sfmovietour.repository" />
 	
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
