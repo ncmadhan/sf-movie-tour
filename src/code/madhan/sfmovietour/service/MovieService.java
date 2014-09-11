@@ -6,7 +6,7 @@ import code.madhan.sfmovietour.model.Movie;
 
 public interface MovieService {
 	
-	public Page<Movie> findAllMovies();
+	public Page<Movie> findAllMovies(int page, int pageSize);
 	public Movie findMovieById(String id);
 
 }

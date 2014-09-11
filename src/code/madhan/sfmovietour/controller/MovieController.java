@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import code.madhan.sfmovietour.model.Movie;
 import code.madhan.sfmovietour.service.MovieService;
@@ -21,17 +23,21 @@ public class MovieController {
 	MovieService movieService;
 	
 	@RequestMapping(value="/movies")
-	public String viewMovieList(Model model) {
-		Page<Movie> moviesPageList = movieService.findAllMovies();
+	public String getMovieListView(Model model, @RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="page_size", defaultValue="10") int pageSize) {
+		model.addAttribute("movies", getMovieListMarshalled(page, pageSize));
+		return "movies1";
+	}
+	
+	@RequestMapping(value="/movies", produces={"application/json"})
+	public @ResponseBody List<Movie> getMovieListMarshalled(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="page_size", defaultValue="10") int pageSize) {
+		Page<Movie> moviesPageList = movieService.findAllMovies(page, pageSize);
 		List<Movie> movies = new ArrayList<Movie>();
 		
 		Iterator<Movie> itr = moviesPageList.iterator();
 		while (itr.hasNext()) {
 			movies.add(itr.next());
 		}
-		
-		model.addAttribute("movies", movies);
-		return "movies1";
+		return movies;
 	}
 	
 	@RequestMapping(value="/movies/{movieId}")
