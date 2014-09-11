@@ -27,4 +27,6 @@
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
 	</bean>
 	
+	<mvc:resources location="/resources/" mapping="/resources/**"/>
+	
 </beans>

@@ -31,7 +31,7 @@ public class MovieController {
 		}
 		
 		model.addAttribute("movies", movies);
-		return "movies";
+		return "movies1";
 	}
 	
 	@RequestMapping(value="/movies/{movieId}")
