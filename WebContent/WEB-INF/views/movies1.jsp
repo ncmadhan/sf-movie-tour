@@ -64,6 +64,10 @@
 	font-family: 'Josefin Slab', serif;
 }
 
+.page-header {
+	margin: 0px;
+}
+
 .navbar li {
 	color: #000
 }
@@ -86,6 +90,11 @@
 body {
 	background: url(/resources/bootstrap-green/assets/crossword.png) repeat;
 	font-family: 'Montserrat', sans-serif;
+}
+
+#contentDiv {
+    margin: 0 auto;
+    width: 100%;
 }
 
 .thumbnail {
@@ -146,16 +155,40 @@ var page = 1;
 $(document).ready(function(){
 	
 	getMovies(page);
- 
-    $( ".movie-poster" )
-        .mouseenter(function() {
+ 	
+	$(document).on('mouseenter','.movie-poster', function(){
+		$(this).find('.caption').removeClass("fadeOut").addClass("fadeIn").show();
+	});
+	
+	$(document).on('mouseleave','.movie-poster', function(){
+		$(this).find('.caption').removeClass("fadeIn").addClass("fadeOut");
+	});
+	
+	
+   /* $( ".movie-poster" ).mouseenter(function() {
             $(this).find('.caption').removeClass("fadeOut").addClass("fadeIn").show();
         })
         .mouseleave(function() {
             $(this).find('.caption').removeClass("fadeIn").addClass("fadeOut");
-     });
+     });*/
 });
 
+function isotopize() {
+	var $container = $('#contentDiv');
+	$container.isotope({
+		  itemSelector: '.item',
+		  layoutMode: 'masonry',
+		  masonry: {
+			  columnWidth: 20,
+			  gutter: 10
+			}
+		});
+	
+	$container.imagesLoaded( function() {
+		//alert(";");
+		  $container.isotope('layout');
+		});
+}
 function getMovies(page) {
 	
 	$.ajax({
@@ -165,11 +198,34 @@ function getMovies(page) {
 	            alert(st + " : " + err);
 	        },
 	        success: function(result){
-	        	$.each(result, function(i) {
-	        		console.log(result[i].title);
+	        	var output = "<div class='row-fluid'>";
+	        	//var output ="";
+	        	$.each(result, function(i, value) {
+	        		//alert("i is " + i);
+	        		//console.log(result[i].title);
+	        		 if (i%4 == 0 && i!=0) {
+	        			//alert(i);
+	        			output += "</div>";
+	        			output += "<div class='row-fluid'>";
+	        		} 
+	        		
+	        		output += "<div class='item col-sm-4 col-lg-2' style='width:24.5%'> \
+	        								<div class='panel panel-default movie-poster'> \
+	        								<div style='min-height: 2; max-height: 2;' class='panel-body'> \
+	        								<div id='hover-caption' style='text-align: center' class='caption animated'>";
+					output +="<h4>" + result[i].title + "</h4>";
+					output += "<p><button style='width: 100%' type='button' class='btn btn-info'> \
+	        								 <span class='glyphicon glyphicon glyphicon-eye-open'></span>Explore \
+	        								 </button></p></div>";
+					output +="<img src='"+result[i].additionalInfo.Poster+"'class='img-responsive'/></div> \
+	        		                         <div class='panel-footer'>With Caption</div></div></div>";
+	        		//alert(output);
 	        	});
+	        	output +="</div>";
+	        	//alert (output);
+	        	$("#contentDiv").append(output);
+	        	isotopize();	
 	        }
-		
 	});
 }
 </script>
@@ -180,7 +236,7 @@ function getMovies(page) {
 	<div class="page-header">
 		<p>San Francisco Movie Tour</p>
 	</div>
-	<div class="infinite-scroll container-fluid">
+	<div id="contentDiv" class="infinite-scroll container-fluid">
 
 	
 	</div>
@@ -189,5 +245,7 @@ function getMovies(page) {
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 
 	<script src="/resources/bootstrap-green/js/bootstrap.min.js"></script>
+	<script src="/resources/js/isotope.pkgd.min.js"></script>
+	<script src="/resources/js/imagesloaded.pkgd.min.js"></script>
 </body>
 </html>

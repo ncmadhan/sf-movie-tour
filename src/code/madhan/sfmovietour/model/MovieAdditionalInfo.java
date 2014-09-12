@@ -34,6 +34,9 @@ public class MovieAdditionalInfo {
 	
 	@JsonProperty("Rated")
 	private String rated;
+	
+	@JsonProperty("Poster")
+	private String poster;
 
 	public String getImdbID() {
 		return imdbID;
@@ -113,6 +116,22 @@ public class MovieAdditionalInfo {
 
 	public void setRated(String rated) {
 		this.rated = rated;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getPoster() {
+		return poster;
+	}
+
+	public void setPoster(String poster) {
+		this.poster = poster;
 	}
 
 	

@@ -17,7 +17,7 @@ public class MovieServiceImpl implements MovieService {
 	
 	@Override
 	public Page<Movie> findAllMovies(int page, int pageSize) {
-		return movieRepository.findAll(new PageRequest(page, pageSize));
+		return movieRepository.findAll(new PageRequest(page-1, pageSize));
 	}
 	
 
