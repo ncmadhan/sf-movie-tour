@@ -273,7 +273,7 @@ public class PopulateMovieDataHelper {
 			// Test Data
 			List<Movie> moviePageList = new ArrayList<Movie>();
 			String sfDataRequestUrl = AppConstants.SF_DATA_ENDPOINT_URL
-					+ "?$order=" + "title" + "&$offset=0&$limit=40";
+					+ "?$order=" + "title" + "&$offset=0&$limit=300";
 			
 			moviePageList = Arrays.asList(client.getForObject(
 					sfDataRequestUrl, Movie[].class));

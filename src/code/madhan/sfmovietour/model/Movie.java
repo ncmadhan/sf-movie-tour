@@ -44,9 +44,9 @@ public class Movie {
 	private String funFacts;
 	
 	private MovieAdditionalInfo additionalInfo;
+	
 	private Facet facets = new Facet();
 	
-	@JsonIgnore
 	private List<Location> movieLocations = new ArrayList<Location>();
 	
 	

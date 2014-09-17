@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import code.madhan.sfmovietour.model.Movie;
 
 @Repository
-public interface MovieRepository extends MongoRepository<Movie, String>{ 
+public interface MovieRepository extends MongoRepository<Movie, String>, CustomMovieRepository{ 
 	
 	Movie findById(String id);
 	

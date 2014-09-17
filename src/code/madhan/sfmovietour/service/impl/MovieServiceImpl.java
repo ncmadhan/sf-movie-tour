@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import code.madhan.sfmovietour.model.Movie;
+import code.madhan.sfmovietour.repository.FacetCountRepository;
 import code.madhan.sfmovietour.repository.MovieRepository;
 import code.madhan.sfmovietour.service.MovieService;
 
@@ -15,9 +16,10 @@ public class MovieServiceImpl implements MovieService {
 	@Autowired
 	MovieRepository movieRepository;
 	
+	
 	@Override
-	public Page<Movie> findAllMovies(int page, int pageSize) {
-		return movieRepository.findAll(new PageRequest(page-1, pageSize));
+	public Page<Movie> findAllMovies(int page, int pageSize, String decadeFilter, String neighbourhoodFilter) {
+		return movieRepository.findAll(new PageRequest(page, pageSize));
 	}
 	
 

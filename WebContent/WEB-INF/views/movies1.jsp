@@ -21,14 +21,19 @@
     <![endif]-->
 
 <!-- Headbereich -->
+	
 <link rel="stylesheet" type="text/css"
 	href="/resources/bootstrap-green/css/animate.min.css">
 <link href='http://fonts.googleapis.com/css?family=Josefin+Slab:400,700'
 	rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700'
 	rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Oswald:400,300,700'
+	rel='stylesheet' type='text/css'>
+
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="/resources/js/sfmain.js"></script>
 <style>
 .panel-footer {
 	font-color: black;
@@ -74,7 +79,7 @@
 
 .panel-body {
 	background-color: rgb(127, 0, 0);
-	background-color: rgba(27, 42, 35, 0.4);
+	background-color: rgba(247, 246, 240, 0.4);
 	padding: 5px;
 	-webkit-background-clip: padding-box; /* for Safari */
 	background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
@@ -82,19 +87,20 @@
 
 .panel-footer {
 	border: 8px solid rgb(127, 0, 0);
-	border: 8px solid rgba(27, 42, 35, 0.4);
+	border: 8px solid rgba(247, 246, 240, 0.4);
 	-webkit-background-clip: padding-box; /* for Safari */
 	background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
 }
 
 body {
-	background: url(/resources/bootstrap-green/assets/crossword.png) repeat;
-	font-family: 'Montserrat', sans-serif;
+	background: url(/resources/bootstrap-green/assets/skulls.png) repeat;
+	font-family: 'Oswald', sans-serif;
+	font-weight: 300;
 }
 
 #contentDiv {
-    margin: 0 auto;
-    width: 100%;
+	margin: 0 auto;
+	width: 100%;
 }
 
 .thumbnail {
@@ -146,88 +152,20 @@ body {
 .btn-info {
 	font-size: 1.2em;
 }
+
+p.thin {
+	line-height: 80%;
+}
+
+.pipeDivider {
+	margin-left: 10px;
+	margin-right: 10px;
+}
 </style>
 
 <script type="text/javascript">
 
-var page = 1;
 
-$(document).ready(function(){
-	
-	getMovies(page);
- 	
-	$(document).on('mouseenter','.movie-poster', function(){
-		$(this).find('.caption').removeClass("fadeOut").addClass("fadeIn").show();
-	});
-	
-	$(document).on('mouseleave','.movie-poster', function(){
-		$(this).find('.caption').removeClass("fadeIn").addClass("fadeOut");
-	});
-	
-	
-   /* $( ".movie-poster" ).mouseenter(function() {
-            $(this).find('.caption').removeClass("fadeOut").addClass("fadeIn").show();
-        })
-        .mouseleave(function() {
-            $(this).find('.caption').removeClass("fadeIn").addClass("fadeOut");
-     });*/
-});
-
-function isotopize() {
-	var $container = $('#contentDiv');
-	$container.isotope({
-		  itemSelector: '.item',
-		  layoutMode: 'masonry',
-		  masonry: {
-			  columnWidth: 20,
-			  gutter: 10
-			}
-		});
-	
-	$container.imagesLoaded( function() {
-		//alert(";");
-		  $container.isotope('layout');
-		});
-}
-function getMovies(page) {
-	
-	$.ajax({
-		url:"/movies.json?page="+page,
-		 type: "GET",
-		 error : function(jq, st, err) {
-	            alert(st + " : " + err);
-	        },
-	        success: function(result){
-	        	var output = "<div class='row-fluid'>";
-	        	//var output ="";
-	        	$.each(result, function(i, value) {
-	        		//alert("i is " + i);
-	        		//console.log(result[i].title);
-	        		 if (i%4 == 0 && i!=0) {
-	        			//alert(i);
-	        			output += "</div>";
-	        			output += "<div class='row-fluid'>";
-	        		} 
-	        		
-	        		output += "<div class='item col-sm-4 col-lg-2' style='width:24.5%'> \
-	        								<div class='panel panel-default movie-poster'> \
-	        								<div style='min-height: 2; max-height: 2;' class='panel-body'> \
-	        								<div id='hover-caption' style='text-align: center' class='caption animated'>";
-					output +="<h4>" + result[i].title + "</h4>";
-					output += "<p><button style='width: 100%' type='button' class='btn btn-info'> \
-	        								 <span class='glyphicon glyphicon glyphicon-eye-open'></span>Explore \
-	        								 </button></p></div>";
-					output +="<img src='"+result[i].additionalInfo.Poster+"'class='img-responsive'/></div> \
-	        		                         <div class='panel-footer'>With Caption</div></div></div>";
-	        		//alert(output);
-	        	});
-	        	output +="</div>";
-	        	//alert (output);
-	        	$("#contentDiv").append(output);
-	        	isotopize();	
-	        }
-	});
-}
 </script>
 
 
@@ -236,16 +174,49 @@ function getMovies(page) {
 	<div class="page-header">
 		<p>San Francisco Movie Tour</p>
 	</div>
-	<div id="contentDiv" class="infinite-scroll container-fluid">
+	<div class="well well-lg">
+		<span>Showing <span id="movieCount">0</span> Movies
+		</span> <span class="pipeDivider">|</span> <span>Shot in </span>
+		<div id="neighbourhoodDropdown" class="btn-group ">
+			<button class="btn">All Neighbourhoods</button>
+			<button class="btn dropdown-toggle" data-toggle="dropdown">
+				<span class="caret"></span>
+			</button>
+			<ul id="neighbourhoodFilter"
+				class="dropdown-menu dropdown-menu-right" role="menu"
+				aria-labelledby="dropdownMenu">
 
-	
+			</ul>
+		</div>
+		<span class="pipeDivider">|</span> <span>Released during </span>
+		<div id="decadeDropdown" class="btn-group ">
+			<button class="btn">Any Year</button>
+			<button class="btn dropdown-toggle" data-toggle="dropdown">
+				<span class="caret"></span>
+			</button>
+			<ul id="decadeFilter" class="dropdown-menu dropdown-menu-right"
+				role="menu" aria-labelledby="dropdownMenu">
+
+			</ul>
+		</div>
+
+	</div>
+	<div id="contentDiv" class="infinite-scroll container-fluid"></div>
+	<div id="load-more" class="text-center"></div>
+
+	<div id="page-nav">
+		<a href="javascript:getMovies(1,'aadsf');"></a>
 	</div>
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	
 
 	<script src="/resources/bootstrap-green/js/bootstrap.min.js"></script>
 	<script src="/resources/js/isotope.pkgd.min.js"></script>
 	<script src="/resources/js/imagesloaded.pkgd.min.js"></script>
+	<script src="/resources/js/jquery.infinitescroll.min.js"></script>
+	<script src="/resources/js/jquery.ba-bbq.min.js"></script>
+
 </body>
 </html>

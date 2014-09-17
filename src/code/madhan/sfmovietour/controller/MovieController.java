@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import code.madhan.sfmovietour.model.FacetCount;
 import code.madhan.sfmovietour.model.Movie;
+import code.madhan.sfmovietour.model.MoviesDTO;
+import code.madhan.sfmovietour.service.FacetCountService;
 import code.madhan.sfmovietour.service.MovieService;
 
 @Controller
@@ -22,22 +25,37 @@ public class MovieController {
 	@Autowired
 	MovieService movieService;
 	
+	@Autowired
+	FacetCountService facetCountService;
+	
 	@RequestMapping(value="/movies")
-	public String getMovieListView(Model model, @RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="page_size", defaultValue="10") int pageSize) {
-		model.addAttribute("movies", getMovieListMarshalled(page, pageSize));
+	public String getMovieListView(Model model, @RequestParam(value="page", defaultValue="0") int page, @RequestParam(value="page_size", defaultValue="10") int pageSize) {
+		System.out.println("movlistpage: " + page + " pageSize: " + pageSize);
+		//model.addAttribute("movies", getMovieListMarshalled(page, pageSize));
 		return "movies1";
 	}
 	
 	@RequestMapping(value="/movies", produces={"application/json"})
-	public @ResponseBody List<Movie> getMovieListMarshalled(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="page_size", defaultValue="10") int pageSize) {
-		Page<Movie> moviesPageList = movieService.findAllMovies(page, pageSize);
+	public @ResponseBody MoviesDTO getMovieListMarshalled(@RequestParam(value="page", defaultValue="0") int page, @RequestParam(value="page_size", defaultValue="10") int pageSize) {
+		System.out.println("page: " + page + " pageSize: " + pageSize);
+		Page<Movie> moviesPageList = movieService.findAllMovies(page, pageSize, null, null);
+		FacetCount metaFacets = facetCountService.findFacetCountById("");
+		
+		System.out.println("Total: " + metaFacets.getValue().getCount());
+		//System.out.println("Count " + metaFacets.getValue().getFacets().getNeighborhood());
+		
+		MoviesDTO moviesDTO = new MoviesDTO();
+		moviesDTO.setMetaFacets(metaFacets);
+		
 		List<Movie> movies = new ArrayList<Movie>();
 		
 		Iterator<Movie> itr = moviesPageList.iterator();
 		while (itr.hasNext()) {
 			movies.add(itr.next());
 		}
-		return movies;
+		moviesDTO.setMovies(movies);
+		System.out.println("Size of movies is " + movies.size());
+		return moviesDTO;
 	}
 	
 	@RequestMapping(value="/movies/{movieId}")
