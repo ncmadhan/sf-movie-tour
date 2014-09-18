@@ -177,7 +177,7 @@ p.thin {
 	<div class="well well-lg">
 		<span>Showing <span id="movieCount">0</span> Movies
 		</span> <span class="pipeDivider">|</span> <span>Shot in </span>
-		<div id="neighbourhoodDropdown" class="btn-group ">
+		<div id="neighbourhoodDropdown" class="btn-group filterSelection">
 			<button class="btn">All Neighbourhoods</button>
 			<button class="btn dropdown-toggle" data-toggle="dropdown">
 				<span class="caret"></span>
@@ -189,7 +189,7 @@ p.thin {
 			</ul>
 		</div>
 		<span class="pipeDivider">|</span> <span>Released during </span>
-		<div id="decadeDropdown" class="btn-group ">
+		<div id="decadeDropdown" class="btn-group filterSelection">
 			<button class="btn">Any Year</button>
 			<button class="btn dropdown-toggle" data-toggle="dropdown">
 				<span class="caret"></span>
