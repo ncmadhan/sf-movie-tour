@@ -1,0 +1,126 @@
+.panel-footer {
+	font-color: black;
+}
+
+.navbar {
+	background-color: transparent;
+	background: transparent;
+	border-color: transparent;
+	font-family: 'Josefin Slab', serif;
+	font-color: black;
+}
+
+.navbar .navbar-nav {
+	display: inline-block;
+	float: none;
+	vertical-align: top;
+}
+
+.navbar .navbar-collapse .navbar-header .page-header {
+	display: inline-block;
+	float: none;
+	vertical-align: top;
+	text-align: center;
+	font-weight: 300em;
+	font-color: #000000;
+	font-family: 'Josefin Slab', serif;
+}
+
+.page-header p {
+	font-size: 6em;
+	text-align: center;
+	font-family: 'Josefin Slab', serif;
+}
+
+.page-header {
+	margin: 0px;
+}
+
+.navbar li {
+	color: #000
+}
+
+.panel-body {
+	background-color: rgb(127, 0, 0);
+	background-color: rgba(247, 246, 240, 0.4);
+	padding: 5px;
+	-webkit-background-clip: padding-box; /* for Safari */
+	background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
+}
+
+.panel-footer {
+	border: 8px solid rgb(127, 0, 0);
+	border: 8px solid rgba(247, 246, 240, 0.4);
+	-webkit-background-clip: padding-box; /* for Safari */
+	background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
+}
+
+body {
+	background: url(/resources/bootstrap-green/assets/skulls.png) repeat;
+	font-family: 'Oswald', sans-serif;
+	font-weight: 300;
+}
+
+#contentDiv {
+	margin: 0 auto;
+	width: 100%;
+}
+
+.thumbnail {
+	position: relative;
+	overflow: hidden;
+	-vendor-animation-duration: 13s;
+	-vendor-animation-delay: 2s;
+	-vendor-animation-iteration-count: infinite;
+}
+
+.movie-poster {
+	position: relative;
+	overflow: hidden;
+}
+
+.caption {
+	position: absolute;
+	top: 0;
+	right: 0;
+	background: rgba(67, 77, 85, 0.75);
+	width: 100%;
+	height: 100%;
+	padding: 2%;
+	display: none;
+	text-align: center;
+	vertical-align: middle !important;
+	color: #fff !important;
+	z-index: 2;
+	-webkit-animation-duration: 1s;
+	-webkit-animation-fill-mode: both;
+}
+
+#hover-caption a {
+	background-color: #fff;
+}
+
+.panel:hover {
+	cursor: hand;
+}
+
+#hover-caption a:active {
+	background-color: #fff;
+}
+
+.btn {
+	text-transform: none;
+}
+
+.btn-info {
+	font-size: 1.2em;
+}
+
+p.thin {
+	line-height: 80%;
+}
+
+.pipeDivider {
+	margin-left: 10px;
+	margin-right: 10px;
+}

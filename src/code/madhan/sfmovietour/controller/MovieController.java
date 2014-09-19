@@ -36,24 +36,26 @@ public class MovieController {
 	}
 	
 	@RequestMapping(value="/movies", produces={"application/json"})
-	public @ResponseBody MoviesDTO getMovieListMarshalled(@RequestParam(value="page", defaultValue="0") int page, @RequestParam(value="page_size", defaultValue="10") int pageSize) {
+	public @ResponseBody MoviesDTO getMovieListMarshalled(@RequestParam(value="page", defaultValue="0") int page, @RequestParam(value="page_size", defaultValue="10") int pageSize,
+			@RequestParam(value="filter", defaultValue="") String filter, @RequestParam(value="sort", defaultValue="") String sort) {
 		System.out.println("page: " + page + " pageSize: " + pageSize);
-		Page<Movie> moviesPageList = movieService.findAllMovies(page, pageSize, null, null);
+		//Page<Movie> moviesPageList = movieService.findAllMovies(page, pageSize, null, null);
+		List<Movie> movies = new ArrayList<Movie>();
+		MoviesDTO moviesDTO = new MoviesDTO();
+		
+	
+		movies = movieService.findAllMovies(page, pageSize, filter, sort);
 		FacetCount metaFacets = facetCountService.findFacetCountById("");
 		
 		System.out.println("Total: " + metaFacets.getValue().getCount());
-		//System.out.println("Count " + metaFacets.getValue().getFacets().getNeighborhood());
 		
-		MoviesDTO moviesDTO = new MoviesDTO();
+		moviesDTO.setMovies(movies);
 		moviesDTO.setMetaFacets(metaFacets);
 		
-		List<Movie> movies = new ArrayList<Movie>();
-		
-		Iterator<Movie> itr = moviesPageList.iterator();
+		/*Iterator<Movie> itr = moviesPageList.iterator();
 		while (itr.hasNext()) {
 			movies.add(itr.next());
-		}
-		moviesDTO.setMovies(movies);
+		}*/
 		System.out.println("Size of movies is " + movies.size());
 		return moviesDTO;
 	}

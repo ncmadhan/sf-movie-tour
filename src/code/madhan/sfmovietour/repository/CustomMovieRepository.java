@@ -6,5 +6,5 @@ import code.madhan.sfmovietour.model.Movie;
 
 public interface CustomMovieRepository {
 
-	public List<Movie> findMoviesUsingFilters(String decadeFilter, String neighbourhoodFilter);
+	List<Movie> findAllMovies(int page, int pageSize, String filter, String sort);
 }

@@ -26,6 +26,12 @@ $( document ).ready( function () {
 		$( "#neighbourhoodDropdown .btn:first-child" ).text( $( this ).text() );
 		$( "#neighbourhoodDropdown .btn:first-child" ).val( $( this ).text() );
 		//$("#neighbourhoodDropdown").find(".active-filter").removeClass("active-filter");
+	} );
+	
+	$( "#sortDropdown .dropdown-menu" ).on( 'click', 'li a', function () {
+		$( "#sortDropdown .btn:first-child" ).text( $( this ).text() );
+		$( "#sortDropdown .btn:first-child" ).val( $( this ).text() );
+		//$("#neighbourhoodDropdown").find(".active-filter").removeClass("active-filter");
 	} ); 
 
 	$( document ).on( 'mouseenter', '.movie-poster', function () {
@@ -40,10 +46,14 @@ $( document ).ready( function () {
 		e.preventDefault();
 		
 		thisdata = $( this ).attr( 'data-filter' );
-		alert ("this data " + thisdata);
-		_filters[thisdata] = 1;
+		//alert (thisdata);
 		var state = {};
-		state ["filter"] = generateFilterHash(_filters);
+		
+			var filterParts = thisdata.split( ':' );
+			_filters[filterParts[0]] = filterParts[1];
+			state ["filter"] = generateFilterHash(_filters);
+		
+		
 		$.bbq.pushState( state );
 		
 		/*
@@ -62,18 +72,27 @@ $( document ).ready( function () {
 		$.bbq.pushState( state ); */
 	} );
 
+	$( document ).on( 'click', '.sort', function ( e ) {
+		e.preventDefault();
+		
+		thisdata = $( this ).attr( 'data-filter' );
+		var state = {};
+		state ["sort"] = thisdata;
+		$.bbq.pushState( state );
+		
+	} );
+
 	/*
 	 * $( ".movie-poster" ).mouseenter(function() { $(this).find('.caption').removeClass("fadeOut").addClass("fadeIn").show(); }) .mouseleave(function() { $(this).find('.caption').removeClass("fadeIn").addClass("fadeOut"); });
 	 */
 } );
 
 function generateFilterHash(filterMap) {
-	var keys = [];
+	var filterValues = [];
 	$.each(filterMap, function (key, value) {
-		alert ("key " + key);
-		keys.push(key);
+		filterValues.push(key+":"+value);
 	});
-	return keys.join(",");
+	return filterValues.join(",");
 	
 }
 function imgError ( image ) {
@@ -88,7 +107,7 @@ function generateItemDom ( result ) {
 	// Populate Decade Filter
 	$( "#decadeFilter" ).empty();
 	var decadeFilterOutput = "";
-	decadeFilterOutput += "<li><a tabindex='-1' href='#'>Any Year</a></li>";
+	decadeFilterOutput += "<li><a class='filter' tabindex='-1' href='#' data-filter='decade:all'>Any Year</a></li>";
 	decadeFilterOutput += "<li class='divider'></li>";
 	$.each( result.metaFacets.value.facets[ "releaseDecade" ], function ( key, value ) {
 		console.log( key + value );
@@ -99,7 +118,7 @@ function generateItemDom ( result ) {
 	// Populate Neighbourhood Filter
 	$( "#neighbourhoodFilter" ).empty();
 	var neighbourhoodFilterOutput = "";
-	neighbourhoodFilterOutput += "<li><a tabindex='-1' href='#'>All Neighbourhoods</a></li>";
+	neighbourhoodFilterOutput += "<li><a class='filter' tabindex='-1' href='#' data-filter='neighbourhood:all'>All Neighbourhoods</a></li>";
 	neighbourhoodFilterOutput += "<li class='divider'></li>";
 	$.each( result.metaFacets.value.facets[ "neighbourhood" ], function ( key, value ) {
 		neighbourhoodFilterOutput += "<li><a class='filter' tabindex='-1' href='#' data-filter='neighbourhood:" + key + "'>" + key + " (" + value + ")" + "</a></li>";
@@ -124,9 +143,8 @@ function generateItemDom ( result ) {
 		                         <p class='thin'><span class='glyphicon glyphicon-facetime-video'/> Shot in " + result.movies[ i ].movieLocations.length
 				+ " location(s) in SF</em></p> \
 		                         </div></div></div>";
-		// alert(output);
+		
 	} );
-	// alert ("inside generate " + output);
 	return output;
 }
 
@@ -167,23 +185,32 @@ function isotopize () {
 			currPage : 0
 		},
 		dataType : 'json',
-		appendCallback : false
+		appendCallback : false,
+		path: getPath
+		
 	}, function ( json, opts ) {
 		// Get current page
 		if ( json.movies.length == 0 ) {
 			opts.state.isDone = true;
 		}
 		var newElements = generateItemDom( json );
+		
+		_page++;
+		var filterSortUrlPath = getFilterSortUrlPath();
+		var navUrl = "/movies.json?page=" + _page + filterSortUrlPath;
+		newElements += "<div id='page-nav'><a href=" + navUrl +"></a></div>";
 		var $newElems = $( newElements );
 		$container.append( $newElems );
 		// console.log($("#contentDiv").html());
 
 		
 		//opts.state.currPage = page + 1;
-		_page++;
+		/*_page++;
 		var filterSortUrlPath = getFilterSortUrlPath();
-		$( "#page-nav a" ).prop( "href", "/movies.json?page=" + _page + filterSortUrlPath);
-		console.log( "page nav value is: " + $( "#page-nav a" ).attr( "href" ) );
+		var navUrl = "/movies.json?page=" + _page + filterSortUrlPath;
+		
+		$( "#page-nav a" ).prop( "href", navUrl);
+		console.log( "page nav value is: " + $( "#page-nav a" ).attr( "href" ) );*/
 		$container.isotope( 'appended', $newElems );
 		$container.imagesLoaded( function () {
 			console.log( "images loaded again" );
@@ -194,10 +221,13 @@ function isotopize () {
 	$container.infinitescroll('bind');
 }
 
-
+function getPath(page) {
+	
+	alert ("ding ding dong dong" +  page + "&" + getFilterSortUrlPath());
+}
 function getFilterSortUrlPath() {
 	if ( _filterSort != null &&  _filterSort != "" ) {
-		var filterSortUrlPath = "&filter=" + _filterSort;
+		var filterSortUrlPath = "&" + _filterSort;
 		console.log("filtersort not null " + filterSortUrlPath);
 		return filterSortUrlPath;
 	}
@@ -206,6 +236,7 @@ function getFilterSortUrlPath() {
 }
 function getMovies () {
 	
+	_page = 0;
 	var filterSortUrlPath = getFilterSortUrlPath();
 	requestUrl = "/movies.json?page=" + _page + filterSortUrlPath;
 	console.log( "inside get movies: " + requestUrl );
@@ -221,16 +252,16 @@ function getMovies () {
 			var $container = $("#contentDiv");
 			//var output = "<div class='row-fluid'>";
 			output = generateItemDom( result );
-			//output +="</div>";
-			//alert (output);
 			_page++;
-			//filterSort = "";
 			var filterSortUrlPath = getFilterSortUrlPath();
-			$( "#page-nav a" ).prop( "href", "/movies.json?page=" + _page + filterSortUrlPath);
+			var navUrl = "/movies.json?page=" + _page + filterSortUrlPath;
+			output += "<div id='page-nav'><a href=" + navUrl +"></a></div>";
+			console.log("navurl value is " + navUrl);
+			$( "#page-nav a" ).prop( "href", navUrl);
 			console.log( "page nav value is: " + $( "#page-nav a" ).attr( "href" ) );
 			$container.infinitescroll("destroy");
 			$container.empty();
-			console.log("output in getmovies " + output);
+			//console.log("output in getmovies " + output);
 			$container.append( output );
 			$container.infinitescroll({                      
 			    state: {                                              
