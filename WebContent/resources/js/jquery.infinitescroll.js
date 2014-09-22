@@ -75,7 +75,12 @@
     };
 
     $.infinitescroll.prototype = {
-
+    		
+    	/*
+    	 * Custom variables for filter and sort
+    	 */	
+    		filter: "",
+    		sort:"",
         /*
             ----------------------------
             Private methods
@@ -128,7 +133,7 @@
 
             // Validate page fragment path
             var path = $(opts.nextSelector).attr('href');
-            alert ("href found " + path);
+           // alert ("href found " + path);
             if (!path) {
                 this._debug('Navigation selector not found');
                 return false;
@@ -560,7 +565,7 @@
             
             console.log ("-----------------opts.path is " + opts.path);
             
-            desturl = (typeof path === 'function') ? path(opts.state.currPage) : path.join(opts.state.currPage);
+            desturl = (typeof path === 'function') ? path(opts.state.currPage) : path.join(opts.state.currPage+$.infinitescroll.prototype.filter+$.infinitescroll.prototype.sort);
             console.log ("-----------------dest url is " + desturl);
             instance._debug('heading into ajax', desturl);
             

@@ -47,7 +47,7 @@ public class MovieController {
 		movies = movieService.findAllMovies(page, pageSize, filter, sort);
 		FacetCount metaFacets = facetCountService.findFacetCountById("");
 		
-		System.out.println("Total: " + metaFacets.getValue().getCount());
+		//System.out.println("Total: " + metaFacets.getValue().getCount());
 		
 		moviesDTO.setMovies(movies);
 		moviesDTO.setMetaFacets(metaFacets);

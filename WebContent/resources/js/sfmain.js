@@ -52,7 +52,7 @@ $( document ).ready( function () {
 			var filterParts = thisdata.split( ':' );
 			_filters[filterParts[0]] = filterParts[1];
 			state ["filter"] = generateFilterHash(_filters);
-		
+			 $.infinitescroll.prototype.filter = "&filter=" + generateFilterHash(_filters);
 		
 		$.bbq.pushState( state );
 		
@@ -79,6 +79,7 @@ $( document ).ready( function () {
 		var state = {};
 		state ["sort"] = thisdata;
 		$.bbq.pushState( state );
+		$.infinitescroll.prototype.sort = "&sort=" + thisdata;
 		
 	} );
 
@@ -102,7 +103,10 @@ function imgError ( image ) {
 }
 
 function generateItemDom ( result ) {
-	$( "#movieCount" ).text( result.metaFacets.value.count );
+	if (result.metaFacets != null) {
+		$( "#movieCount" ).text( result.metaFacets.value.count );
+	}
+	
 
 	// Populate Decade Filter
 	$( "#decadeFilter" ).empty();
@@ -185,8 +189,7 @@ function isotopize () {
 			currPage : 0
 		},
 		dataType : 'json',
-		appendCallback : false,
-		path: getPath
+		appendCallback : false
 		
 	}, function ( json, opts ) {
 		// Get current page
@@ -221,10 +224,7 @@ function isotopize () {
 	$container.infinitescroll('bind');
 }
 
-function getPath(page) {
-	
-	alert ("ding ding dong dong" +  page + "&" + getFilterSortUrlPath());
-}
+
 function getFilterSortUrlPath() {
 	if ( _filterSort != null &&  _filterSort != "" ) {
 		var filterSortUrlPath = "&" + _filterSort;
