@@ -39,23 +39,16 @@ public class MovieController {
 	public @ResponseBody MoviesDTO getMovieListMarshalled(@RequestParam(value="page", defaultValue="0") int page, @RequestParam(value="page_size", defaultValue="10") int pageSize,
 			@RequestParam(value="filter", defaultValue="") String filter, @RequestParam(value="sort", defaultValue="") String sort) {
 		System.out.println("page: " + page + " pageSize: " + pageSize);
-		//Page<Movie> moviesPageList = movieService.findAllMovies(page, pageSize, null, null);
+		System.out.println("filter " + filter + "sort " + sort);
 		List<Movie> movies = new ArrayList<Movie>();
 		MoviesDTO moviesDTO = new MoviesDTO();
-		
 	
 		movies = movieService.findAllMovies(page, pageSize, filter, sort);
 		FacetCount metaFacets = facetCountService.findFacetCountById("");
 		
-		//System.out.println("Total: " + metaFacets.getValue().getCount());
-		
 		moviesDTO.setMovies(movies);
 		moviesDTO.setMetaFacets(metaFacets);
 		
-		/*Iterator<Movie> itr = moviesPageList.iterator();
-		while (itr.hasNext()) {
-			movies.add(itr.next());
-		}*/
 		System.out.println("Size of movies is " + movies.size());
 		return moviesDTO;
 	}

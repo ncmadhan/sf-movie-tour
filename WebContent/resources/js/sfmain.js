@@ -1,39 +1,55 @@
+/**
+ * Global variables that store the current page, filter and sort
+ */
 var _page = 0;
 var _filterSort = "";
 var _filters = {};
 
-
 $( document ).ready( function () {
 
+	/**
+	 * Bind onhashchange. This is called everytime $.bbq calls pushState. pushState is called everytime a filter or sort is clicked
+	 */
 	$( window ).bind( 'hashchange', function ( e ) {
-		var $container = $("#contentDiv");
+		var $container = $( "#contentDiv" );
+
 		var urlPath = $.param.fragment();
+		var params = $.deparam.querystring( urlPath );
+
 		_filterSort = urlPath;
 		_page = 0;
-		$container.isotope('destroy');
+		$container.isotope( 'destroy' );
+		console.log( "Going to get movies" );
+		initFilterSortDropdowns( params[ "filter" ], params[ "sort" ] );
 		getMovies();
 	} );
 
-	getMovies();
-
+	// Set the decade filter dropdown text to selected value
 	$( "#decadeDropdown .dropdown-menu" ).on( 'click', 'li a', function () {
 		$( "#decadeDropdown .btn:first-child" ).text( $( this ).text() );
 		$( "#decadeDropdown .btn:first-child" ).val( $( this ).text() );
-		//$("#decadeDropdown").find(".active-filter").removeClass("active-filter");
 	} );
+
+	/*
+	 * Set the neighbourhood filter dropdown text to selected value TODO: need to use a more generic way to set value of dropdown. Maybe adding more filters
+	 */
 
 	$( "#neighbourhoodDropdown .dropdown-menu" ).on( 'click', 'li a', function () {
 		$( "#neighbourhoodDropdown .btn:first-child" ).text( $( this ).text() );
 		$( "#neighbourhoodDropdown .btn:first-child" ).val( $( this ).text() );
-		//$("#neighbourhoodDropdown").find(".active-filter").removeClass("active-filter");
 	} );
-	
+
+	/**
+	 * Set sort dropdown value on select
+	 */
 	$( "#sortDropdown .dropdown-menu" ).on( 'click', 'li a', function () {
 		$( "#sortDropdown .btn:first-child" ).text( $( this ).text() );
 		$( "#sortDropdown .btn:first-child" ).val( $( this ).text() );
-		//$("#neighbourhoodDropdown").find(".active-filter").removeClass("active-filter");
-	} ); 
+	} );
 
+	/*
+	 * Show caption on movie hover
+	 */
 	$( document ).on( 'mouseenter', '.movie-poster', function () {
 		$( this ).find( '.caption' ).removeClass( "fadeOut" ).addClass( "fadeIn" ).show();
 	} );
@@ -42,73 +58,161 @@ $( document ).ready( function () {
 		$( this ).find( '.caption' ).removeClass( "fadeIn" ).addClass( "fadeOut" );
 	} );
 
+	/*
+	 * Filter dropdown click handler. Pushes the state to the hash using .bbq Onhashchange will handle the actual fetch of data based on selected value. Every time filter is clicked, the data in contentDiv is emptied and repopulated.
+	 */
 	$( document ).on( 'click', '.filter', function ( e ) {
 		e.preventDefault();
-		
-		thisdata = $( this ).attr( 'data-filter' );
-		//alert (thisdata);
-		var state = {};
-		
-			var filterParts = thisdata.split( ':' );
-			_filters[filterParts[0]] = filterParts[1];
-			state ["filter"] = generateFilterHash(_filters);
-			 $.infinitescroll.prototype.filter = "&filter=" + generateFilterHash(_filters);
-		
-		$.bbq.pushState( state );
-		
-		/*
-		console.log("onclick filter, this data "  + thisdata );
-		
-		 var state = $.bbq.getState();
-		filterState = state["filter"];
-		var filterValues = filterState.spilt(",");
-		
-		filterValues.forEach(function(entry) {
-			console.log("fi" + entry);
-		});
-		var filter = thisdata.split( ':' );
-		//state[ filter[ 0 ] ] = filter[ 1 ];
-		state["filter"]  thisdata;
-		$.bbq.pushState( state ); */
-	} );
 
-	$( document ).on( 'click', '.sort', function ( e ) {
-		e.preventDefault();
-		
+		// data-filter has values of the form "neighbourhood:nobhill", "decade:1990s"
 		thisdata = $( this ).attr( 'data-filter' );
 		var state = {};
-		state ["sort"] = thisdata;
+		var filterParts = thisdata.split( ':' );
+
+		// storing in map ensures the value of neighbourhood or decade filter,if already exists, gets updated instead of appended
+		_filters[ filterParts[ 0 ] ] = filterParts[ 1 ];
+		state[ "filter" ] = generateFilterHash( _filters );
+
+		// infinitescroll custom variable "filter" which takes the filter in the form "&filter=<neighbourhood:value>,<decade:value>"
+		$.infinitescroll.prototype.filter = "&filter=" + generateFilterHash( _filters );
+
+		// push the state map to hash
 		$.bbq.pushState( state );
-		$.infinitescroll.prototype.sort = "&sort=" + thisdata;
-		
+
 	} );
 
 	/*
-	 * $( ".movie-poster" ).mouseenter(function() { $(this).find('.caption').removeClass("fadeOut").addClass("fadeIn").show(); }) .mouseleave(function() { $(this).find('.caption').removeClass("fadeIn").addClass("fadeOut"); });
+	 * Sort dropdown click handler. As with filter, pushes state to hash Also, sets the infinitescroll custom variable "sort"
 	 */
+	$( document ).on( 'click', '.sort', function ( e ) {
+		e.preventDefault();
+		thisdata = $( this ).attr( 'data-filter' );
+		var state = {};
+		state[ "sort" ] = thisdata;
+		$.bbq.pushState( state );
+
+		// custom infinite scroll variable
+		$.infinitescroll.prototype.sort = "&sort=" + thisdata;
+	} );
+
+	// Trigger hashchange to get the initial set of movies and use any filter,sort hash if already present in the url
+	$( window ).trigger( 'hashchange' );
+
 } );
 
-function generateFilterHash(filterMap) {
-	var filterValues = [];
-	$.each(filterMap, function (key, value) {
-		filterValues.push(key+":"+value);
-	});
-	return filterValues.join(",");
+/**
+ * Intializes the filter and sort dropdowns based on the hash url values.
+ * TODO: Horribly implemented with no generic use of filter or sort dropdown values.
+ * Change to use a more efficient and cleaner way to implement this.
+ * 
+ **/
+function initFilterSortDropdowns ( filterValue, sortValue ) {
+	console.log( "filtervalue " + filterValue );
+	console.log( "sortvalue " + sortValue );
+	var filterParts = [];
+	var hasNeighbourhoodFilter = false;
+	var hasDecadeFilter = false;
 	
+	if ( filterValue != undefined && filterValue != null && filterValue != "" ) {
+		filterParts = filterValue.split( "," );
+		$.each( filterParts, function ( index, value ) {
+			if ( value != null && value != "" ) {
+				var filterPart = [];
+				filterPart = value.split( ":" );
+				if ( filterPart[ 0 ] == "neighbourhood" ) {
+					if ( ( filterPart[ 1 ] != null && filterPart[ 1 ] != null ) ) {
+						console.log( "filter part is neighbourhood " + filterPart[ 1 ] );
+						hasNeighbourhoodFilter = true;
+						$( "#neighbourhoodDropdown .btn:first-child" ).text( filterPart[ 1 ] );
+						$( "#neighbourhoodDropdown .btn:first-child" ).val( filterPart[ 1 ] );
+					} else {
+						$( "#neighbourhoodDropdown .btn:first-child" ).text( "All Neighbourhoods" );
+						$( "#neighbourhoodDropdown .btn:first-child" ).val( "All Neighbourhoods" );
+					}
+				}
+				if ( filterPart[ 0 ] == "decade" ) {
+
+					if ( filterPart[ 1 ] != null && filterPart[ 1 ] != null ) {
+						hasDecadeFilter = true;
+						console.log( "filter part is decade " + filterPart[ 1 ] );
+						$( "#decadeDropdown .btn:first-child" ).text( filterPart[ 1 ] );
+						$( "#decadeDropdown .btn:first-child" ).val( filterPart[ 1 ] );
+					} else {
+						$( "#decadeDropdown .btn:first-child" ).text( "Any Year" );
+						$( "#decadeDropdown .btn:first-child" ).val( "Any Year" );
+					}
+				}
+			}
+		} );
+	}
+
+	else {
+		$( "#neighbourhoodDropdown .btn:first-child" ).text( "All Neighbourhoods" );
+		$( "#neighbourhoodDropdown .btn:first-child" ).val( "All Neighbourhoods" );
+
+		$( "#decadeDropdown .btn:first-child" ).text( "Any Year" );
+		$( "#decadeDropdown .btn:first-child" ).val( "Any Year" );
+	}
+	
+	if (hasNeighbourhoodFilter == false) {
+		$( "#neighbourhoodDropdown .btn:first-child" ).text( "All Neighbourhoods" );
+		$( "#neighbourhoodDropdown .btn:first-child" ).val( "All Neighbourhoods" );
+	}
+	
+	if (hasDecadeFilter == false) {
+		$( "#decadeDropdown .btn:first-child" ).text( "Any Year" );
+		$( "#decadeDropdown .btn:first-child" ).val( "Any Year" );
+	}
+
+	if ( sortValue != undefined && sortValue != null && sortValue != "" ) {
+		$( "#sortDropdown .btn:first-child" ).text( sortValue );
+		$( "#sortDropdown .btn:first-child" ).val( sortValue );
+	} else {
+		$( "#sortDropdown .btn:first-child" ).text( "Default (Name)" );
+		$( "#sortDropdown .btn:first-child" ).val( "Default (Name)" );
+	}
 }
+
+/**
+ * Convert filter map into <filter-field>:<value>,<filter-field>:<value>
+ * 
+ * @param filterMap
+ * @returns the converted map in string format
+ */
+function generateFilterHash ( filterMap ) {
+	var filterValues = [];
+	$.each( filterMap, function ( key, value ) {
+		filterValues.push( key + ":" + value );
+	} );
+	return filterValues.join( "," );
+}
+
+/**
+ * If a movie does not have poster image, set placeholder image
+ * 
+ * @param image
+ * @returns {Boolean}
+ */
 function imgError ( image ) {
 	image.onerror = "";
 	image.src = "http://placehold.it/300x200&text=Movie+Image+NA";
 	return true;
 }
 
+/**
+ * Convert the result of /movies.json into DOM elements
+ * 
+ * @param result
+ * @returns {String}
+ */
 function generateItemDom ( result ) {
-	if (result.metaFacets != null) {
+
+	// Populate total movie count
+	if ( result.metaFacets != null ) {
 		$( "#movieCount" ).text( result.metaFacets.value.count );
 	}
-	
 
-	// Populate Decade Filter
+	// Populate Decade Filter dropdown
 	$( "#decadeFilter" ).empty();
 	var decadeFilterOutput = "";
 	decadeFilterOutput += "<li><a class='filter' tabindex='-1' href='#' data-filter='decade:all'>Any Year</a></li>";
@@ -119,7 +223,7 @@ function generateItemDom ( result ) {
 	} );
 	$( "#decadeFilter" ).append( decadeFilterOutput );
 
-	// Populate Neighbourhood Filter
+	// Populate Neighbourhood Filter dropdown
 	$( "#neighbourhoodFilter" ).empty();
 	var neighbourhoodFilterOutput = "";
 	neighbourhoodFilterOutput += "<li><a class='filter' tabindex='-1' href='#' data-filter='neighbourhood:all'>All Neighbourhoods</a></li>";
@@ -129,6 +233,7 @@ function generateItemDom ( result ) {
 	} );
 	$( "#neighbourhoodFilter" ).append( neighbourhoodFilterOutput );
 
+	// Iterate through the movies in the result and create the grid
 	var output = "";
 	$.each( result.movies, function ( i, value ) {
 
@@ -147,11 +252,14 @@ function generateItemDom ( result ) {
 		                         <p class='thin'><span class='glyphicon glyphicon-facetime-video'/> Shot in " + result.movies[ i ].movieLocations.length
 				+ " location(s) in SF</em></p> \
 		                         </div></div></div>";
-		
+
 	} );
 	return output;
 }
 
+/**
+ * Initialize jquery.isotope, infinitescroll. Should be called after dom elements are loaded
+ */
 function isotopize () {
 	var $container = $( '#contentDiv' );
 	$container.isotope( {
@@ -167,8 +275,6 @@ function isotopize () {
 		console.log( "images loaded" );
 		$container.isotope( 'layout' );
 	} );
-
-	//$container.isotope( 'on', 'layoutComplete', onLayout );
 
 	$container.infinitescroll( {
 		navSelector : '#page-nav', // selector for the paged navigation
@@ -190,57 +296,52 @@ function isotopize () {
 		},
 		dataType : 'json',
 		appendCallback : false
-		
+
 	}, function ( json, opts ) {
 		// Get current page
 		if ( json.movies.length == 0 ) {
 			opts.state.isDone = true;
 		}
 		var newElements = generateItemDom( json );
-		
 		_page++;
 		var filterSortUrlPath = getFilterSortUrlPath();
 		var navUrl = "/movies.json?page=" + _page + filterSortUrlPath;
-		newElements += "<div id='page-nav'><a href=" + navUrl +"></a></div>";
+		newElements += "<div id='page-nav'><a href=" + navUrl + "></a></div>";
 		var $newElems = $( newElements );
 		$container.append( $newElems );
-		// console.log($("#contentDiv").html());
-
-		
-		//opts.state.currPage = page + 1;
-		/*_page++;
-		var filterSortUrlPath = getFilterSortUrlPath();
-		var navUrl = "/movies.json?page=" + _page + filterSortUrlPath;
-		
-		$( "#page-nav a" ).prop( "href", navUrl);
-		console.log( "page nav value is: " + $( "#page-nav a" ).attr( "href" ) );*/
 		$container.isotope( 'appended', $newElems );
 		$container.imagesLoaded( function () {
 			console.log( "images loaded again" );
 			$container.isotope( 'layout' );
 		} );
 	} );
-
-	$container.infinitescroll('bind');
+	$container.infinitescroll( 'bind' );
 }
 
-
-function getFilterSortUrlPath() {
-	if ( _filterSort != null &&  _filterSort != "" ) {
+/**
+ * _filterSort contains the hash URL part. ie "filter=<..>,sort=<..>" This is a convience function only to append & to _filterSort if it is not null
+ * 
+ * @returns {String}
+ */
+function getFilterSortUrlPath () {
+	if ( _filterSort != null && _filterSort != "" ) {
 		var filterSortUrlPath = "&" + _filterSort;
-		console.log("filtersort not null " + filterSortUrlPath);
+		console.log( "filtersort not null " + filterSortUrlPath );
 		return filterSortUrlPath;
-	}
-	else 
+	} else
 		return "";
 }
+
+/**
+ * Resets the page number (_page). Sets the Request URL to the default page and default filter_sort (fetched from Hash) Sets the contentDiv container to empty and repopulates the data. This is called initially and whenever a filter,sort is clicked.
+ */
 function getMovies () {
-	
+
 	_page = 0;
 	var filterSortUrlPath = getFilterSortUrlPath();
 	requestUrl = "/movies.json?page=" + _page + filterSortUrlPath;
 	console.log( "inside get movies: " + requestUrl );
-	
+
 	$.ajax( {
 		url : requestUrl,
 		type : "GET",
@@ -249,26 +350,26 @@ function getMovies () {
 		},
 		success : function ( result ) {
 			var output = "";
-			var $container = $("#contentDiv");
-			//var output = "<div class='row-fluid'>";
+			var $container = $( "#contentDiv" );
 			output = generateItemDom( result );
-			_page++;
+
+			// Set the next navigation link
 			var filterSortUrlPath = getFilterSortUrlPath();
+			_page++;
 			var navUrl = "/movies.json?page=" + _page + filterSortUrlPath;
-			output += "<div id='page-nav'><a href=" + navUrl +"></a></div>";
-			console.log("navurl value is " + navUrl);
-			$( "#page-nav a" ).prop( "href", navUrl);
-			console.log( "page nav value is: " + $( "#page-nav a" ).attr( "href" ) );
-			$container.infinitescroll("destroy");
+			output += "<div id='page-nav'><a href=" + navUrl + "></a></div>";
+			$( "#page-nav a" ).prop( "href", navUrl );
+
+			// Re-initialize the infinite scroll plugin
+			$container.infinitescroll( "destroy" );
 			$container.empty();
-			//console.log("output in getmovies " + output);
 			$container.append( output );
-			$container.infinitescroll({                      
-			    state: {                                              
-			        isDestroyed: false,
-			        isDone: false                           
-			}
-			});
+			$container.infinitescroll( {
+				state : {
+					isDestroyed : false,
+					isDone : false
+				}
+			} );
 			isotopize();
 		}
 	} );

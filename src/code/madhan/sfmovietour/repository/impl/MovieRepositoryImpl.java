@@ -74,11 +74,13 @@ public class MovieRepositoryImpl implements CustomMovieRepository {
 		if (sort != null && !sort.equals("")) {
 			if (sort.equals("year")) {
 				sort = "releaseYear";
+				query.with(new Sort(Sort.Direction.ASC, sort));
 			}
-			else if (sort.equals("imdbRating")) {
+			else if (sort.equals("imdb-rating")) {
 				sort = "additionalInfo.imdbRating";
+				query.with(new Sort(Sort.Direction.DESC, sort));
 			}
-			query.with(new Sort(Sort.Direction.ASC, sort));
+			
 		}
 		
 		System.out.println("Query executed is: "+ query.toString());
