@@ -24,12 +24,6 @@
 	
 <link rel="stylesheet" type="text/css"
 	href="/resources/bootstrap-green/css/animate.min.css">
-<link href='http://fonts.googleapis.com/css?family=Josefin+Slab:400,700'
-	rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700'
-	rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Oswald:400,300,700'
-	rel='stylesheet' type='text/css'>
 <link rel="stylesheet" type="text/css"
 	href="/resources/css/sfmain.css">
 
@@ -45,20 +39,20 @@
 
 </head>
 <body>
-	<div class="page-header">
+	<div class="page-header-text">
 		<p>San Francisco Movie Tour</p>
 	</div>
 	<div class="well well-lg">
 		<span>Showing <span id="movieCount">0</span> Movies
 		</span> <span class="pipeDivider">|</span> <span>Shot in </span>
-		<div id="neighbourhoodDropdown" class="btn-group filterSelection">
+		<div id="neighbourhoodDropdown" class="btn-group filterSelection" >
 			<button class="btn">All Neighbourhoods</button>
 			<button class="btn dropdown-toggle" data-toggle="dropdown">
 				<span class="caret"></span>
 			</button>
 			<ul id="neighbourhoodFilter"
-				class="dropdown-menu dropdown-menu-right" role="menu"
-				aria-labelledby="dropdownMenu">
+				class="dropdown-menu dropdown-menu-right scrollable-menu" role="menu"
+				aria-labelledby="dropdownMenu" >
 
 			</ul>
 		</div>
@@ -85,8 +79,8 @@
 				role="menu" aria-labelledby="dropdownMenu">
 				<li><a class="sort" tabindex=-1 data-filter="default">Default (Name)</a>
 				<li class='divider'></li>
-				<li><a class="sort" tabindex=-1 data-filter="year">Year</a>
-				<li><a class="sort" tabindex=-1 data-filter="imdb-rating">IMDB Rating</a>
+				<li><a class="sort" tabindex=-1 data-filter="Year">Year</a>
+				<li><a class="sort" tabindex=-1 data-filter="Imdb-Rating">IMDB-Rating</a>
 			</ul>
 		</div>
 		</div>

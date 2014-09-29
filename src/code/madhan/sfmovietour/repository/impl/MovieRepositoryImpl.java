@@ -35,7 +35,7 @@ public class MovieRepositoryImpl implements CustomMovieRepository {
 				if (filterValue.split(":")[0].equals("neighbourhood")) {
 					neighbourhoodFilter = (!filterValue.split(":")[1].equals("all")) ? filterValue.split(":")[1] : ""; 
 				}
-				if (filterValue.split(":")[0].equals("decade")) {
+				if (filterValue.split(":")[0].equals("releaseDecade")) {
 					decadeFilter = (!filterValue.split(":")[1].equals("all")) ? filterValue.split(":")[1] : ""; 
 				}
 			}
@@ -72,11 +72,11 @@ public class MovieRepositoryImpl implements CustomMovieRepository {
 		query.with(new PageRequest(page, pageSize));
 		
 		if (sort != null && !sort.equals("")) {
-			if (sort.equals("year")) {
+			if (sort.equals("Year")) {
 				sort = "releaseYear";
 				query.with(new Sort(Sort.Direction.ASC, sort));
 			}
-			else if (sort.equals("imdb-rating")) {
+			else if (sort.equals("Imdb-Rating")) {
 				sort = "additionalInfo.imdbRating";
 				query.with(new Sort(Sort.Direction.DESC, sort));
 			}

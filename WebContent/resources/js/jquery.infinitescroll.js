@@ -276,11 +276,12 @@
                 return opts.pathParse(path, this.options.state.currPage+1);
 
             } else if (path.match(/^(.*?)\b2\b(.*?$)/)) {
+            	
                 path = path.match(/^(.*?)\b2\b(.*?$)/).slice(1);
 
                 // if there is any 2 in the url at all.
-            } else if (path.match(/^(.*?)2(.*?$)/)) {
-
+            }/* else if (path.match(/^(.*?)2(.*?$)/)) {
+            	alert(2);
                 // page= is used in django:
                 // http://www.infinite-scroll.com/changelog/comment-page-1/#comment-127
                 if (path.match(/^(.*?page=)2(\/.*|$)/)) {
@@ -290,8 +291,8 @@
 
                 path = path.match(/^(.*?)2(.*?$)/).slice(1);
 
-            } else {
-
+            } */else {
+            	
                 // page= is used in drupal too but second page is page=1 not page=2:
                 // thx Jerod Fritz, vladikoff
                 if (path.match(/^(.*?page=)1(\/.*|$)/)) {
@@ -303,7 +304,7 @@
                     opts.state.isInvalidPage = true;  //prevent it from running on this page.
                 }
             }
-            //alert("path is " + path);
+            
             this._debug('determinePath', path);
             return path;
 
@@ -523,6 +524,7 @@
 
         // Bind to scroll
         bind: function infscr_bind() {
+        	
             this._binding('bind');
         },
 
@@ -561,9 +563,10 @@
             // if we're dealing with a table we can't use DIVs
             box = $(opts.contentSelector).is('table, tbody') ? $('<tbody/>') : $('<div/>');
             console.log ("-----------------going to do ajax");
-            console.log ("-----------------opts.state.currpage is " + opts.state.currpage);
-            
+            console.log ("-----------------opts.state.currpage is " + opts.state.currPage);
             console.log ("-----------------opts.path is " + opts.path);
+            console.log ("-----------------state.filter is " + $.infinitescroll.prototype.filter);
+            console.log ("-----------------state.sort is " + $.infinitescroll.prototype.sort);
             
             desturl = (typeof path === 'function') ? path(opts.state.currPage) : path.join(opts.state.currPage+$.infinitescroll.prototype.filter+$.infinitescroll.prototype.sort);
             console.log ("-----------------dest url is " + desturl);
@@ -645,6 +648,7 @@
 
         // Retrieve next set of content items
         retrieve: function infscr_retrieve(pageNum) {
+        	
             pageNum = pageNum || null;
 
             var instance = this,
@@ -671,20 +675,39 @@
         // Check to see next page is needed
         scroll: function infscr_scroll() {
 
+        	
             var opts = this.options,
             state = opts.state;
 
             // if behavior is defined and this function is extended, call that instead of default
             if (!!opts.behavior && this['scroll_'+opts.behavior] !== undefined) {
+            	
                 this['scroll_'+opts.behavior].call(this);
                 return;
             }
 
             if (state.isDuringAjax || state.isInvalidPage || state.isDone || state.isDestroyed || state.isPaused) {
+            	/*if (state.isDuringAjax) {
+            		alert(21);
+            	}
+            	if (state.isInvalidPage) {
+            		alert(22);
+            	}
+            	if (state.isDone) {
+            		alert(23);
+            	}
+            	if (state.isDestroyed) {
+            		alert(24);
+            	}
+            	if (state.isPaused) {
+            		alert(25);
+            	}*/
+            	
                 return;
             }
 
             if (!this._nearbottom()) {
+            	
                 return;
             }
 

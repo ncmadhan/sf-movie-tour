@@ -1,27 +1,25 @@
 package code.madhan.sfmovietour.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Facet {
 
-	private List<String> releaseDecade = new ArrayList<String>();
-	private List<String> neighbourhood = new ArrayList<String>();
+	private Set<String> releaseDecade = new HashSet<String>();
+	private Set<String> neighbourhood = new HashSet<String>();
 	
-	
-	public List<String> getReleasedDecade() {
+	public Set<String> getReleaseDecade() {
 		return releaseDecade;
 	}
-	public void setReleasedDecade(List<String> releaseDecade) {
+	public void setReleaseDecade(Set<String> releaseDecade) {
 		this.releaseDecade = releaseDecade;
 	}
-	public List<String> getNeighbourhood() {
+	public Set<String> getNeighbourhood() {
 		return neighbourhood;
 	}
-	public void setNeighbourhood(List<String> neighbourhood) {
+	public void setNeighbourhood(Set<String> neighbourhood) {
 		this.neighbourhood = neighbourhood;
 	}
-	
 	
 	
 	

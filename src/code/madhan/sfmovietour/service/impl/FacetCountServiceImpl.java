@@ -15,7 +15,7 @@ public class FacetCountServiceImpl implements FacetCountService {
 	
 	@Override
 	public FacetCount findFacetCountById(String id) {
-		return facetCountRepository.findOne(id);
+		return facetCountRepository.findById(id);
 	}
 
 	

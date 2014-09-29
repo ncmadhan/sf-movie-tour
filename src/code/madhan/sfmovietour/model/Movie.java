@@ -40,7 +40,6 @@ public class Movie {
 	private String locationAddress;
 	
 	@JsonProperty("fun_facts")
-	@Transient
 	private String funFacts;
 	
 	private MovieAdditionalInfo additionalInfo;

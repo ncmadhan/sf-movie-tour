@@ -24,16 +24,17 @@
 
 <link rel="stylesheet" type="text/css"
 	href="/resources/bootstrap-green/css/animate.min.css">
-<link href='http://fonts.googleapis.com/css?family=Josefin+Slab:400,700'
-	rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700'
-	rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Oswald:400,300,700'
-	rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:700' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300' rel='stylesheet' type='text/css'>
+
 <link rel="stylesheet" type="text/css" href="/resources/css/sfmain.css">
+<link
+	href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"
+	rel="stylesheet">
 
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyDt9F4FUqgRJ7JuSlOR0DQUbdaIImFESJg" type="text/javascript"></script>
 
 <style>
 .movie-detail {
@@ -42,7 +43,6 @@
 	padding: 5px;
 	-webkit-background-clip: padding-box; /* for Safari */
 	background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
-	
 	-webkit-box-shadow: 2px 2px 6px 0px rgba(50, 50, 50, 0.75);
 	-moz-box-shadow: 2px 2px 6px 0px rgba(50, 50, 50, 0.75);
 	box-shadow: 2px 2px 6px 0px rgba(50, 50, 50, 0.75);
@@ -59,7 +59,7 @@
 
 .location {
 	background-color: rgb(127, 0, 0);
-	background-color: rgba(247, 246, 240, 0.8);
+	background-color: rgba(255, 255, 255, 0.8);
 	padding: 5px;
 	-webkit-background-clip: padding-box; /* for Safari */
 	background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
@@ -77,25 +77,55 @@
 	border-bottom: 4px !important;
 }
 
-.address-row {
+.location-header {
+	cursor: hand;
+	cursor: pointer;
 	background-color: rgb(127, 0, 0);
-	background-color: rgba(255, 255, 255, 0.8);
+	background-color: rgba(150, 205, 205, 0.8);
+	
+	padding: 5px;
+	-webkit-background-clip: padding-box; /* for Safari */
+	background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
+	-webkit-border-top: 4px !important;
+	-moz-border-top: 4px !important;
+	border-top: 4px !important;
+	
+	-webkit-border-bottom: 4px !important;
+	-moz-border-bottom: 4px !important;
+	border-bottom: 4px !important;
+	
+	-webkit-border-top-left-radius: 4px !important;
+	-moz-border-top-left-radius: 4px !important;
+	border-top-left-radius: 4px !important;
+	
+	-webkit-border-top-right-radius: 4px !important;
+	-moz-border-top-right-radius: 4px !important;
+	border-top-right-radius: 4px !important;
+}
+
+.location-body {
+	background-color: rgb(127, 0, 0);
+	background-color: rgba(209, 238, 238, 0.8);
 	padding: 5px;
 	margin-bottom: 15px;
 	-webkit-background-clip: padding-box; /* for Safari */
 	background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
-	-webkit-box-shadow: 2px 2px 6px 0px rgba(50, 50, 50, 0.75);
-	-moz-box-shadow: 2px 2px 6px 0px rgba(50, 50, 50, 0.75);
-	box-shadow: 2px 2px 6px 0px rgba(50, 50, 50, 0.75);
-	-webkit-border-radius: 4px !important;
-	-moz-border-radius: 4px !important;
-	border-radius: 4px !important;
+	
 	-webkit-border-top: 4px !important;
 	-moz-border-top: 4px !important;
 	border-top: 4px !important;
+	
 	-webkit-border-bottom: 4px !important;
 	-moz-border-bottom: 4px !important;
 	border-bottom: 4px !important;
+	
+	-webkit-border-bottom-left-radius: 4px !important;
+	-moz-border-left-radius: 4px !important;
+	border-top-left-radius: 4px !important;
+	
+	-webkit-border-bottom-right-radius: 4px !important;
+	-moz-border-bottom-right-radius: 4px !important;
+	border-bottom-right-radius: 4px !important;
 }
 
 html {
@@ -112,37 +142,70 @@ body {
 	width: 100%;
 	height: 100%
 }
+
+.funFacts {
+	padding: 3px;
+	font-size: 13px;
+}
+
+label {
+	font-weight: normal !important
+}
+;
 </style>
 
 <script type="text/javascript">
-	window.onload = loadScript;
-
+	//window.onload = loadScript;
+var _markers = [];
+var map;
 	function initializeMaps () {
-		$maps = $( ".row .map .map-canvas" );
-		$maps.each( function ( index, element ) {
-			console.log( "inside for each map element" );
-			$infotext = $( element ).children( ".map-info-text" );
-
-			var coords = $infotext.children( ".latLng" ).text().split( "," );
-			var centerLatLng = new google.maps.LatLng( parseFloat( coords[ 0 ] ), parseFloat( coords[ 1 ] ) );
-
-			var mapOptions = {
-				'zoom' : 18,
-				'mapTypeId' : google.maps.MapTypeId.ROADMAP,
-				'center' : centerLatLng
+		
+		var centerLatLng = new google.maps.LatLng(37.7749295,-122.4194155);
+		var mapEl = $("#map-canvas")[0];
+		
+		var mapOptions = {
+				'zoom' : 3,
+				'mapTypeId' : google.maps.MapTypeId.ROADMAP
 			};
-
-			var map = new google.maps.Map( element, mapOptions );
-			var marker = new google.maps.Marker( {
+		
+		
+		map = new google.maps.Map(mapEl, mapOptions );
+		var marker;
+		
+		$maps = $(".location-header");
+		var bounds = new google.maps.LatLngBounds();
+		var infoWindow = new google.maps.InfoWindow({"maxWidth":250});
+		$maps.each( function ( index, element ) {
+			//alert( "inside for each map element" );
+			$infotext = $( element ).children( ".map-info-text" );
+			var coords = $infotext.children( ".latLng" ).text().split( "," );
+			//alert(coords[0] + " " + coords[1] );
+			var markerLatLng = new google.maps.LatLng(coords[0],coords[1]);
+			var info = "<p>" + $infotext.children( ".address" ).text() + "</p>";
+			marker = new google.maps.Marker( {
 				map : map,
-				position : centerLatLng,
-				title : $infotext.children( '.address' ).text()
+				position : new google.maps.LatLng(coords[0],coords[1]),
+				title : $infotext.children( '.address' ).text(),
+				visible: true
 			} );
 
-		} );
-
+			 google.maps.event.addListener(marker, 'click', (function(marker) {
+			        return function() {
+			          infoWindow.setContent(info);
+			          infoWindow.open(map, marker);
+			        }
+			      })(marker));
+			 console.log(coords[0] + "," + coords[1]);
+			 _markers.push(marker);
+			 bounds.extend(marker.position);
+			 
+		} ); 
+		map.fitBounds(bounds);
+		map.zoom(3);
 	};
-
+	
+	
+	
 	function initializeStreetViewMaps () {
 		$maps = $( ".row .map .map-canvas" );
 		$maps.each( function ( index, element ) {
@@ -167,11 +230,21 @@ body {
 
 	};
 
+	google.maps.event.addDomListener(window, "load", initializeMaps);
 	function loadScript () {
+		alert("sdf");
 		var script = document.createElement( 'script' );
 		script.type = 'text/javascript';
 		script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyDt9F4FUqgRJ7JuSlOR0DQUbdaIImFESJg&' + 'callback=initializeMaps';
 		document.body.appendChild( script );
+	}
+	function hello(index) {
+		alert (_markers.length);
+		var marker = _markers[index];
+		if (marker != null) {
+			alert ("marker not null");
+		}
+		marker['infowindow'].open(map, marker);
 	}
 </script>
 </head>
@@ -198,8 +271,8 @@ body {
 		<div class="row movie-detail">
 
 			<div class="col-md-4">
-				<img class="img-responsive img-rounded" src="${movie.additionalInfo.poster}"
-					alt="">
+				<img class="img-responsive img-rounded"
+					src="${movie.additionalInfo.poster}" alt="">
 			</div>
 
 			<div class="col-md-4">
@@ -242,8 +315,8 @@ body {
 		</div>
 		<!-- /.row -->
 
-		<br/>
-		
+		<br />
+
 		<!-- Related Projects Row -->
 		<div class="row">
 
@@ -253,38 +326,49 @@ body {
 		</div>
 		<!-- /.row -->
 
-		
-			<div class="row location" >
-				<div class="col-sm-6 col-xs-6 map" style="height: 700px">
-					<div class="map-canvas" style="height: 100%; width: 100%">
-						<div class="map-info-text">
+
+		<div class="row location">
+			<div class="col-sm-6 col-xs-6 map" style="height: 600px">
+				<div id="map-canvas" class="map-canvas" style="height: 600px; width: 100%"><p>hello</p></div>
+			</div>
+
+			<div class="col-sm-6 col-xs-6"
+				style="height: 600px; overflow-y: auto" class="location-list" id="accordion">
+				<c:forEach var="movieLocation" items="${movie.movieLocations}" varStatus="loop">
+				<div class="location-content">
+					<div class="location-header"  data-toggle="collapse" data-target="#collapse${loop.index }" data-parent="#accordion" onClick="hello(${loop.index })">
+						<div class="map-info-text" style="display:none">
 							<div class="title">${movie.title }</div>
 							<div class="address">${movieLocation.address }</div>
-							<div class="latLng">37.6789877,-122.3443434</div>
+							<div class="latLng">${movieLocation.locationCoordinates.coordinates[1]},${movieLocation.locationCoordinates.coordinates[0]}</div>
 						</div>
-					</div>
+						<div class="address">
+							<h5>
+								<strong> ${movieLocation.address }</strong><small>
+									${movieLocation.neighbourhood}</small>
+							</h5>
+						</div>
 
-				</div>
-
-				<div class="col-sm-6 col-xs-6">
-				<c:forEach var="movieLocation" items="${movie.movieLocations}">
-				<div class="row">
-				<div class="col-sm-12 address-row">
-					<div class="address"><strong>${movieLocation.address }</strong></div>
-					<div class="latLng">${movieLocation.locationCoordinates.coordinates[1]},${movieLocation.locationCoordinates.coordinates[0]}</div>
+						<c:if test="${not empty movieLocation.funFacts }">
+							<div class="funFacts">
+								<i class="fa fa-lightbulb-o fa-3x pull-left"
+									style="color: yellow;"></i> ${movieLocation.funFacts }
+							</div>
+						</c:if>
+						
+					</div>
+					<div id="collapse${loop.index }" class="collapse location-body">
+						<h5>
+								<strong> ${movieLocation.address }</strong><small>
+									${movieLocation.neighbourhood}</small>
+							</h5>
 					</div>
 					</div>
-					</c:forEach>
-				</div>
-				
+					<br/>
+				</c:forEach>
 			</div>
-			<br />
-		
-
-
-
-
-
+		</div>
+		<br />
 		<hr>
 
 		<!-- Footer -->

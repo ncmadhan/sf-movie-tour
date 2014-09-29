@@ -2,6 +2,7 @@
 	font-color: black;
 }
 
+/*
 .navbar {
 	background-color: transparent;
 	background: transparent;
@@ -25,16 +26,24 @@
 	font-color: #000000;
 	font-family: 'Josefin Slab', serif;
 }
-
-.page-header p {
-	font-size: 6em;
-	text-align: center;
-	font-family: 'Josefin Slab', serif;
+*/
+.page-header-text {
+	font-family: 'Yanone Kaffeesatz', sans-serif;
+    font-weight: 700;
+    line-height: 46px;
+    font-size: 60px;
+	color : #27598B;	
+	text-shadow: #27598B 0.1px 0.2px 0.4px;
+	height:70px;
+	text-align:center;
+	padding:5px;	
+	background-color: rgb(255,255,255);
+	background-color: rgba(255,255,255,0.75);
+	margin:0px;
+	border-bottom: #53bf6b 4px solid;
 }
 
-.page-header {
-	margin: 0px;
-}
+
 
 .navbar li {
 	color: #000
@@ -56,8 +65,8 @@
 }
 
 body {
-	background: url(/resources/bootstrap-green/assets/skulls.png) repeat;
-	font-family: 'Oswald', sans-serif;
+	background: url(/resources/bootstrap-green/assets/p5.png) repeat;
+	font-family: 'Roboto Condensed', sans-serif;
 	font-weight: 300;
 }
 
@@ -96,17 +105,12 @@ body {
 	-webkit-animation-fill-mode: both;
 }
 
-#hover-caption a {
-	background-color: #fff;
-}
 
 .panel:hover {
 	cursor: hand;
 }
 
-#hover-caption a:active {
-	background-color: #fff;
-}
+
 
 .btn {
 	text-transform: none;
@@ -123,4 +127,18 @@ p.thin {
 .pipeDivider {
 	margin-left: 10px;
 	margin-right: 10px;
+}
+
+
+.well-lg {
+	padding:5px;
+	border-radius:0px;
+	background-color: rgb(255,255,255);
+	background-color: rgba(255,255,255,0.75);
+}
+
+.scrollable-menu {
+    height: auto;
+    max-height: 400px;
+    overflow-x: hidden;
 }

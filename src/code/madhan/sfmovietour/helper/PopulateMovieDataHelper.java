@@ -301,6 +301,9 @@ public class PopulateMovieDataHelper {
 		for (Movie movie: movies) {
 			String omdbApiRequestUrl = AppConstants.OMDB_API_ENDPOINT + movie.getTitle();
 			MovieAdditionalInfo additionalInfo = client.getForObject(omdbApiRequestUrl, MovieAdditionalInfo.class);
+			if (additionalInfo != null && additionalInfo.getImdbRating() != null && additionalInfo.getImdbRating().equals("N/A")) {
+				additionalInfo.setImdbRating("-1");
+			}
 			movie.setAdditionalInfo(additionalInfo);
 			additionalPopulatedMoviesList.add(movie);
 		}

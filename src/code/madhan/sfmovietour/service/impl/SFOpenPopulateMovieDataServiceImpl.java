@@ -1,3 +1,4 @@
+
 package code.madhan.sfmovietour.service.impl;
 
 import java.util.ArrayList;
@@ -8,7 +9,6 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.stereotype.Service;
 
 import code.madhan.sfmovietour.helper.PopulateMovieDataHelper;
-import code.madhan.sfmovietour.model.Facet;
 import code.madhan.sfmovietour.model.Location;
 import code.madhan.sfmovietour.model.Movie;
 import code.madhan.sfmovietour.service.PopulateMovieDataService;
@@ -49,13 +49,13 @@ public class SFOpenPopulateMovieDataServiceImpl implements PopulateMovieDataServ
 			
 			for (Movie curMovie: rawMovieLocationDataSet) {
 				
-				if (!curMovie.getTitle().equals(prevMovie)) { // if the current row indicates a new movie
+				if (!curMovie.getTitle().trim().equals(prevMovie.trim())) { // if the current row indicates a new movie
 					if (populatedMovie != null) { // add the populated movie to the final movie list. Checking for null to handle the first row, when the populated movie object is null
 						populatedMovieList.add(populatedMovie);
 					}
 					
 					populatedMovie = curMovie; // after adding the populated movie, set the currently read movie as the new populated movie (Because this is a new movie)
-					populatedMovie.getFacets().getReleasedDecade().add(populateMovieDataHelper.getPeriodFromYear(curMovie.getReleaseYear()));
+					populatedMovie.getFacets().getReleaseDecade().add(populateMovieDataHelper.getPeriodFromYear(curMovie.getReleaseYear()));
 					
 					System.out.println("Cur Movie: " + curMovie.getTitle());
 					System.out.println("Cur Movie: " + curMovie.getLocationAddress());

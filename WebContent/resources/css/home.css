@@ -1,0 +1,34 @@
+body {
+	margin-top: 10px;
+	margin-bottom: 50px;
+	background: none;
+	font-family: 'Roboto Condensed', sans-serif;
+}
+
+.full {
+  background: url(bg.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.home-title{
+	font-family: 'Yanone Kaffeesatz', sans-serif;
+    font-weight: 700;
+    line-height: 46px;
+    font-size: 60px;
+		color : #27598B;	
+	text-shadow: #27598B 0.8px 1px 1.1px;
+
+}
+
+.home-subtitle {
+	font-size: 17px;
+    line-height: 23px;
+	font-weight:300;
+}
+
+.home-container {
+	top: 5px;
+}

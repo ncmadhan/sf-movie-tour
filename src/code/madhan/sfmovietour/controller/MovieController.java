@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -35,6 +36,40 @@ public class MovieController {
 		return "movies1";
 	}
 	
+	public String getFacetCountId(String filter) {
+		String neighbourhoodFilter = null;
+		String decadeFilter = null;
+		String facetCountId = "";
+		List<String> facets = new ArrayList<String>();
+		if (filter != null && !filter.equals("")) {
+			String filters[] = filter.split(",");
+			
+			for (String filterValue : filters) {
+				if (filterValue.split(":")[0].equals("neighbourhood")) {
+					neighbourhoodFilter = (!filterValue.split(":")[1].equals("all")) ? filterValue.split(":")[1] : ""; 
+				}
+				if (filterValue.split(":")[0].equals("releaseDecade")) {
+					decadeFilter = (!filterValue.split(":")[1].equals("all")) ? filterValue.split(":")[1] : ""; 
+				}
+			}
+			if (decadeFilter != null && !decadeFilter.equals("")) {
+				facets.add("releaseDecade:" + decadeFilter);
+			}
+			if (neighbourhoodFilter != null && !neighbourhoodFilter.equals("")) {
+				facets.add("neighbourhood:"+neighbourhoodFilter);
+			}
+			
+			if (facets != null && !facets.isEmpty()) {
+				facetCountId = StringUtils.join(facets, "|");
+				facetCountId = "|"+facetCountId+"|";
+			}
+		}
+		
+		
+		System.out.println("Facet count ID is " + facetCountId);
+		return facetCountId;
+		
+	}
 	@RequestMapping(value="/movies", produces={"application/json"})
 	public @ResponseBody MoviesDTO getMovieListMarshalled(@RequestParam(value="page", defaultValue="0") int page, @RequestParam(value="page_size", defaultValue="10") int pageSize,
 			@RequestParam(value="filter", defaultValue="") String filter, @RequestParam(value="sort", defaultValue="") String sort) {
@@ -44,7 +79,11 @@ public class MovieController {
 		MoviesDTO moviesDTO = new MoviesDTO();
 	
 		movies = movieService.findAllMovies(page, pageSize, filter, sort);
-		FacetCount metaFacets = facetCountService.findFacetCountById("");
+		
+		
+		String facetCountId = getFacetCountId(filter);
+		
+		FacetCount metaFacets = facetCountService.findFacetCountById(facetCountId);
 		
 		moviesDTO.setMovies(movies);
 		moviesDTO.setMetaFacets(metaFacets);
