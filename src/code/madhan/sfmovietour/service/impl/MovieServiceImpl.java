@@ -42,6 +42,11 @@ public class MovieServiceImpl implements MovieService {
 	public void setMovieRepository(MovieRepository movieRepository) {
 		this.movieRepository = movieRepository;
 	}
+
+	@Override
+	public List<Movie> findMoviesNear(Double lat, Double lng) {
+		return movieRepository.findMoviesNear(lat, lng);
+	}
 	
 	
 	

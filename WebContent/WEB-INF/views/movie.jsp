@@ -24,8 +24,12 @@
 
 <link rel="stylesheet" type="text/css"
 	href="/resources/bootstrap-green/css/animate.min.css">
-<link href='http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:700' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300' rel='stylesheet' type='text/css'>
+<link
+	href='http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:700'
+	rel='stylesheet' type='text/css'>
+<link
+	href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300'
+	rel='stylesheet' type='text/css'>
 
 <link rel="stylesheet" type="text/css" href="/resources/css/sfmain.css">
 <link
@@ -34,7 +38,9 @@
 
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyDt9F4FUqgRJ7JuSlOR0DQUbdaIImFESJg" type="text/javascript"></script>
+<script
+	src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyDt9F4FUqgRJ7JuSlOR0DQUbdaIImFESJg"
+	type="text/javascript"></script>
 
 <style>
 .movie-detail {
@@ -82,22 +88,18 @@
 	cursor: pointer;
 	background-color: rgb(127, 0, 0);
 	background-color: rgba(150, 205, 205, 0.8);
-	
 	padding: 5px;
 	-webkit-background-clip: padding-box; /* for Safari */
 	background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
 	-webkit-border-top: 4px !important;
 	-moz-border-top: 4px !important;
 	border-top: 4px !important;
-	
 	-webkit-border-bottom: 4px !important;
 	-moz-border-bottom: 4px !important;
 	border-bottom: 4px !important;
-	
 	-webkit-border-top-left-radius: 4px !important;
 	-moz-border-top-left-radius: 4px !important;
 	border-top-left-radius: 4px !important;
-	
 	-webkit-border-top-right-radius: 4px !important;
 	-moz-border-top-right-radius: 4px !important;
 	border-top-right-radius: 4px !important;
@@ -110,19 +112,15 @@
 	margin-bottom: 15px;
 	-webkit-background-clip: padding-box; /* for Safari */
 	background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
-	
 	-webkit-border-top: 4px !important;
 	-moz-border-top: 4px !important;
 	border-top: 4px !important;
-	
 	-webkit-border-bottom: 4px !important;
 	-moz-border-bottom: 4px !important;
 	border-bottom: 4px !important;
-	
 	-webkit-border-bottom-left-radius: 4px !important;
 	-moz-border-left-radius: 4px !important;
 	border-top-left-radius: 4px !important;
-	
 	-webkit-border-bottom-right-radius: 4px !important;
 	-moz-border-bottom-right-radius: 4px !important;
 	border-bottom-right-radius: 4px !important;
@@ -143,6 +141,10 @@ body {
 	height: 100%
 }
 
+.panel {
+	margin-bottom: 0px;
+}
+
 .funFacts {
 	padding: 3px;
 	font-size: 13px;
@@ -151,61 +153,76 @@ body {
 label {
 	font-weight: normal !important
 }
-;
 </style>
 
 <script type="text/javascript">
 	//window.onload = loadScript;
-var _markers = [];
-var map;
+	var _markers = [];
+	var _infoWindows = [];
+	var map;
 	function initializeMaps () {
-		
-		var centerLatLng = new google.maps.LatLng(37.7749295,-122.4194155);
-		var mapEl = $("#map-canvas")[0];
-		
+
+		var centerLatLng = new google.maps.LatLng( 37.7749295, -122.4194155 );
+		var mapEl = $( "#map-canvas" )[ 0 ];
+
 		var mapOptions = {
-				'zoom' : 3,
-				'mapTypeId' : google.maps.MapTypeId.ROADMAP
-			};
-		
-		
-		map = new google.maps.Map(mapEl, mapOptions );
-		var marker;
-		
-		$maps = $(".location-header");
+			'zoom' : 3,
+			'mapTypeId' : google.maps.MapTypeId.ROADMAP
+		};
+
+		map = new google.maps.Map( mapEl, mapOptions );
+		//var marker;
+
+		$maps = $( ".location-header" );
 		var bounds = new google.maps.LatLngBounds();
-		var infoWindow = new google.maps.InfoWindow({"maxWidth":250});
+		var infoWindow = new google.maps.InfoWindow( {
+			"maxWidth" : 250
+		} );
+
 		$maps.each( function ( index, element ) {
 			//alert( "inside for each map element" );
-			$infotext = $( element ).children( ".map-info-text" );
-			var coords = $infotext.children( ".latLng" ).text().split( "," );
-			//alert(coords[0] + " " + coords[1] );
-			var markerLatLng = new google.maps.LatLng(coords[0],coords[1]);
-			var info = "<p>" + $infotext.children( ".address" ).text() + "</p>";
-			marker = new google.maps.Marker( {
-				map : map,
-				position : new google.maps.LatLng(coords[0],coords[1]),
-				title : $infotext.children( '.address' ).text(),
-				visible: true
-			} );
+			
+			
+			var marker = null;
+			if ($(element).has(".map-info-text")) {
+				alert("setting null");
+				_markers.push(marker);
+				
+			}
+			else {
+				$infotext = $( element ).children( ".map-info-text" );
+				var coords = $infotext.children( ".latLng" ).text().split( "," );
+				var isApproximate = $infotext.children( ".isApproximate" ).text();
+				alert(coords[0] + " asdf" + coords[1] + " " + isApproximate);
+				var markerLatLng = new google.maps.LatLng( coords[ 0 ], coords[ 1 ] );
+				var info = "<div style='height:80px;width:120px'><p>" + $infotext.children( ".address" ).text() + "</p></div>";
+				
+				marker = new google.maps.Marker( {
+					map : map,
+					position : new google.maps.LatLng( coords[ 0 ], coords[ 1 ] ),
+					title : $infotext.children( '.address' ).text(),
+					visible : true
+				} );
 
-			 google.maps.event.addListener(marker, 'click', (function(marker) {
-			        return function() {
-			          infoWindow.setContent(info);
-			          infoWindow.open(map, marker);
-			        }
-			      })(marker));
-			 console.log(coords[0] + "," + coords[1]);
-			 _markers.push(marker);
-			 bounds.extend(marker.position);
-			 
-		} ); 
-		map.fitBounds(bounds);
-		map.zoom(3);
+				google.maps.event.addListener( marker, 'click', ( function ( marker ) {
+					return function () {
+						infoWindow.setContent( info );
+						infoWindow.open( map, marker );
+						_infoWindows.push( infoWindow );
+					}
+				} )( marker ) );
+				console.log( coords[ 0 ] + "," + coords[ 1 ] );
+				_markers.push( marker );
+
+				bounds.extend( marker.position );
+
+			}
+
+		} );
+		map.fitBounds( bounds );
+		map.zoom( 3 );
 	};
-	
-	
-	
+
 	function initializeStreetViewMaps () {
 		$maps = $( ".row .map .map-canvas" );
 		$maps.each( function ( index, element ) {
@@ -213,6 +230,7 @@ var map;
 			$infotext = $( element ).children( ".map-info-text" );
 
 			var coords = $infotext.children( ".latLng" ).text().split( "," );
+			
 			var centerLatLng = new google.maps.LatLng( coords[ 0 ], coords[ 1 ] );
 
 			var streetViewOptions = {
@@ -230,21 +248,23 @@ var map;
 
 	};
 
-	google.maps.event.addDomListener(window, "load", initializeMaps);
+	google.maps.event.addDomListener( window, "load", initializeMaps );
 	function loadScript () {
-		alert("sdf");
+
 		var script = document.createElement( 'script' );
 		script.type = 'text/javascript';
 		script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyDt9F4FUqgRJ7JuSlOR0DQUbdaIImFESJg&' + 'callback=initializeMaps';
 		document.body.appendChild( script );
 	}
-	function hello(index) {
-		alert (_markers.length);
-		var marker = _markers[index];
-		if (marker != null) {
-			alert ("marker not null");
-		}
-		marker['infowindow'].open(map, marker);
+	//$('#accordion').on('shown.bs.collapse', function() { alert('shown'); });
+
+	function highlightMarker ( index, lat, lng ) {
+		alert(lat+""+lng);
+		var marker = _markers[ index ];
+		var latLng = new google.maps.LatLng( lat, lng );
+		google.maps.event.trigger( marker, "click" );
+		map.panTo( latLng );
+		map.setZoom( 14 );
 	}
 </script>
 </head>
@@ -329,42 +349,76 @@ var map;
 
 		<div class="row location">
 			<div class="col-sm-6 col-xs-6 map" style="height: 600px">
-				<div id="map-canvas" class="map-canvas" style="height: 600px; width: 100%"><p>hello</p></div>
+				<div id="map-canvas" class="map-canvas"
+					style="height: 600px; width: 100%">
+					<p>hello</p>
+				</div>
 			</div>
 
-			<div class="col-sm-6 col-xs-6"
-				style="height: 600px; overflow-y: auto" class="location-list" id="accordion">
-				<c:forEach var="movieLocation" items="${movie.movieLocations}" varStatus="loop">
-				<div class="location-content">
-					<div class="location-header"  data-toggle="collapse" data-target="#collapse${loop.index }" data-parent="#accordion" onClick="hello(${loop.index })">
-						<div class="map-info-text" style="display:none">
-							<div class="title">${movie.title }</div>
-							<div class="address">${movieLocation.address }</div>
-							<div class="latLng">${movieLocation.locationCoordinates.coordinates[1]},${movieLocation.locationCoordinates.coordinates[0]}</div>
-						</div>
-						<div class="address">
-							<h5>
-								<strong> ${movieLocation.address }</strong><small>
-									${movieLocation.neighbourhood}</small>
-							</h5>
-						</div>
+			<div class="col-sm-6 col-xs-6 accordion location-list"
+				style="height: 600px; overflow-y: auto" id="accordion">
+				<c:forEach var="movieLocation" items="${movie.movieLocations}"
+					varStatus="loop">
+					<c:choose>
+						<c:when test="${empty movieLocation.locationCoordinates }">
+							<div class="panel location-content">
+								<div class="location-header">
 
-						<c:if test="${not empty movieLocation.funFacts }">
-							<div class="funFacts">
-								<i class="fa fa-lightbulb-o fa-3x pull-left"
-									style="color: yellow;"></i> ${movieLocation.funFacts }
+									<div class="address">
+										<h5>
+											<strong> Unknown</strong>
+										</h5>
+									</div>
+
+									<c:if test="${not empty movieLocation.funFacts }">
+										<div class="funFacts">
+											<i class="fa fa-lightbulb-o fa-3x pull-left"
+												style="color: yellow;"></i> ${movieLocation.funFacts }
+										</div>
+									</c:if>
+								</div>
 							</div>
-						</c:if>
-						
-					</div>
-					<div id="collapse${loop.index }" class="collapse location-body">
-						<h5>
-								<strong> ${movieLocation.address }</strong><small>
-									${movieLocation.neighbourhood}</small>
-							</h5>
-					</div>
-					</div>
-					<br/>
+							<br />
+
+						</c:when>
+						<c:otherwise>
+							<div class="panel location-content">
+								<div class="location-header" data-toggle="collapse"
+									data-target="#collapse${loop.index }" data-parent="#accordion"
+									onClick="highlightMarker(${loop.index },${movieLocation.locationCoordinates.coordinates[1]},${movieLocation.locationCoordinates.coordinates[0]})">
+									<div class="map-info-text" style="display: none">
+										<div class="title">${movie.title }</div>
+										<div class="address">${movieLocation.address }</div>
+										<div class="latLng">${movieLocation.locationCoordinates.coordinates[1]},${movieLocation.locationCoordinates.coordinates[0]}</div>
+										<div class="isApproximate">${movieLocation.approximate}</div>
+										<div class="neighbourhood">${movieLocation.neighbourhood}</div>
+									</div>
+									<div class="address">
+										<h5>
+											<strong> ${movieLocation.address }</strong><small>
+												${movieLocation.neighbourhood}</small>
+										</h5>
+									</div>
+
+									<c:if test="${not empty movieLocation.funFacts }">
+										<div class="funFacts">
+											<i class="fa fa-lightbulb-o fa-3x pull-left"
+												style="color: yellow;"></i> ${movieLocation.funFacts }
+										</div>
+									</c:if>
+
+								</div>
+								<div id="collapse${loop.index }" class="collapse location-body">
+									<h5>
+										<strong> ${movieLocation.address }</strong><small>
+											${movieLocation.neighbourhood}</small>
+									</h5>
+								</div>
+							</div>
+
+							<br />
+						</c:otherwise>
+					</c:choose>
 				</c:forEach>
 			</div>
 		</div>

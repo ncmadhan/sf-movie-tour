@@ -4,6 +4,7 @@ package code.madhan.sfmovietour.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.neo4j.cypher.internal.compiler.v2_1.ast.rewriters.isolateAggregation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 import code.madhan.sfmovietour.helper.PopulateMovieDataHelper;
 import code.madhan.sfmovietour.model.Location;
 import code.madhan.sfmovietour.model.Movie;
+import code.madhan.sfmovietour.model.MovieThumbnailDTO;
+import code.madhan.sfmovietour.service.MovieService;
 import code.madhan.sfmovietour.service.PopulateMovieDataService;
 
 @Service
@@ -19,6 +22,9 @@ public class SFOpenPopulateMovieDataServiceImpl implements PopulateMovieDataServ
 	
 	@Autowired
 	MongoOperations mongoOperation;
+	
+	@Autowired
+	MovieService movieService;
 	
 	@Override
 	public void populateMovieData() {
@@ -67,8 +73,10 @@ public class SFOpenPopulateMovieDataServiceImpl implements PopulateMovieDataServ
 					}
 					else {
 					Location location = populateMovieDataHelper.fetchLocationDetails(curMovie.getLocationAddress(), curMovie.getFunFacts());
+					
 					populatedMovie.getMovieLocations().add(location); // fetch and add the location details for the current movie to the location list
 					populatedMovie.getFacets().getNeighbourhood().add(location.getNeighbourhood() != null && !location.getNeighbourhood().trim().isEmpty() ? location.getNeighbourhood() : "Unknown");
+					
 					}
 				}
  				else { // this indicates that the previous row and currently fetched row belong to the same movie. So we just add the location to the list
@@ -93,6 +101,7 @@ public class SFOpenPopulateMovieDataServiceImpl implements PopulateMovieDataServ
 			}
 			
 			populatedMovieList = populateMovieDataHelper.populateAdditionalMovieInfo(populatedMovieList);
+			populatedMovieList = populateMoviesShotNearby(populatedMovieList);
 			mongoOperation.insert(populatedMovieList, Movie.class);
 		}
 		
@@ -103,9 +112,45 @@ public class SFOpenPopulateMovieDataServiceImpl implements PopulateMovieDataServ
 		}
 		
 	}
+	
+	public List<Movie> populateMoviesShotNearby(List<Movie> movies) {
+		List<Movie> moviesUpdated = new ArrayList<Movie>();
+		for (Movie movie: movies) {
+			List<Location> movieLocationsUpdated = new ArrayList<Location>();
+			for (Location location: movie.getMovieLocations()) {
+				if (location.getLocationCoordinates() != null && location.getLocationCoordinates().getCoordinates() != null && (location.getLocationCoordinates().getCoordinates()[0] != 0.0 || location.getLocationCoordinates().getCoordinates()[1] == 0.0)) {
+					List<Movie> moviesNearby = movieService.findMoviesNear(location.getLocationCoordinates().getCoordinates()[1], location.getLocationCoordinates().getCoordinates()[0]);
+					List<MovieThumbnailDTO> movieThumbnailDTOs = new ArrayList<MovieThumbnailDTO>();
+					for (Movie movieNearby: moviesNearby) {
+						MovieThumbnailDTO movieThumbnailDTO = new MovieThumbnailDTO();
+						movieThumbnailDTO.setId(movieNearby.getId());
+						movieThumbnailDTO.setTitle(movieNearby.getTitle());
+						if (movieNearby.getAdditionalInfo() != null) {
+							movieThumbnailDTO.setPoster(movieNearby.getAdditionalInfo().getPoster());
+						}
+						else {
+							movieThumbnailDTO.setPoster("");
+						}
+						movieThumbnailDTOs.add(movieThumbnailDTO);
+					}
+					location.setMoviesShotNearby(movieThumbnailDTOs);
+					
+				}
+				movieLocationsUpdated.add(location);
+			}
+			movie.setMovieLocations(movieLocationsUpdated);
+			moviesUpdated.add(movie);
+		}
+		return moviesUpdated;
+		
+	}
 
 	public void setMongoOperation(MongoOperations mongoOperation) {
 		this.mongoOperation = mongoOperation;
+	}
+
+	public void setMovieService(MovieService movieService) {
+		this.movieService = movieService;
 	}
 
 	

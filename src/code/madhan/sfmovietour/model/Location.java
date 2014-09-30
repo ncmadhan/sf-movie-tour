@@ -1,10 +1,16 @@
 package code.madhan.sfmovietour.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Location {
 	
 	String address;
 	String funFacts;
+	
+	
 	GeoJsonCoordinates locationCoordinates;
+	List<MovieThumbnailDTO> moviesShotNearby = new ArrayList<MovieThumbnailDTO>();
 	/*double latitude;
 	double longitude;
 	*/
@@ -62,6 +68,18 @@ public class Location {
 
 	public void setLocationCoordinates(GeoJsonCoordinates locationCoordinates) {
 		this.locationCoordinates = locationCoordinates;
+	}
+
+	public List<MovieThumbnailDTO> getMoviesShotNearby() {
+		return moviesShotNearby;
+	}
+
+	public void setMoviesShotNearby(List<MovieThumbnailDTO> moviesShotNearby) {
+		this.moviesShotNearby = moviesShotNearby;
+	}
+
+	public void setNeighbourhood(String neighbourhood) {
+		this.neighbourhood = neighbourhood;
 	}
 	
 	

@@ -100,6 +100,8 @@ public class PopulateMovieDataHelper {
 			coordinates[1] = rootNode.path("results").path(0)
 					.path("geometry").path("location").path("lat").asDouble();
 			location.setLocationCoordinates(new GeoJsonCoordinates(AppConstants.GEO_JSON_TYPE_POINT, coordinates));
+			
+			
 			//Get lat and long
 /*			location.setLatitude(rootNode.path("results").path(0)
 					.path("geometry").path("location").path("lat").asDouble());
@@ -273,7 +275,7 @@ public class PopulateMovieDataHelper {
 			// Test Data
 			List<Movie> moviePageList = new ArrayList<Movie>();
 			String sfDataRequestUrl = AppConstants.SF_DATA_ENDPOINT_URL
-					+ "?$order=" + "title" + "&$offset=0&$limit=300";
+					+ "?$order=" + "title" + "&$offset=0&$limit=30";
 			
 			moviePageList = Arrays.asList(client.getForObject(
 					sfDataRequestUrl, Movie[].class));

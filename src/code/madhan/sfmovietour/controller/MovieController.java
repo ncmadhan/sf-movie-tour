@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import code.madhan.sfmovietour.model.FacetCount;
 import code.madhan.sfmovietour.model.Movie;
+import code.madhan.sfmovietour.model.MovieThumbnailDTO;
 import code.madhan.sfmovietour.model.MoviesDTO;
 import code.madhan.sfmovietour.service.FacetCountService;
 import code.madhan.sfmovietour.service.MovieService;
@@ -90,6 +91,31 @@ public class MovieController {
 		
 		System.out.println("Size of movies is " + movies.size());
 		return moviesDTO;
+	}
+	
+	@RequestMapping(value="/movies/near", produces={"application/json"})
+	public @ResponseBody List<MovieThumbnailDTO> findMoviesNear(@RequestParam(value="lat", defaultValue="0.0") Double lat, @RequestParam(value="lng", defaultValue="0.0") Double lng) {
+		List<Movie> moviesNearby = new ArrayList<Movie>();
+		
+		if (lat != 0.0 && lng != 0.0) {
+			moviesNearby = movieService.findMoviesNear(lat, lng);
+		}
+		
+		List<MovieThumbnailDTO> movieThumbnailDTOs = new ArrayList<MovieThumbnailDTO>();
+		for (Movie movieNearby: moviesNearby) {
+			MovieThumbnailDTO movieThumbnailDTO = new MovieThumbnailDTO();
+			movieThumbnailDTO.setId(movieNearby.getId());
+			movieThumbnailDTO.setTitle(movieNearby.getTitle());
+			if (movieNearby.getAdditionalInfo() != null) {
+				movieThumbnailDTO.setPoster(movieNearby.getAdditionalInfo().getPoster());
+			}
+			else {
+				movieThumbnailDTO.setPoster("");
+			}
+			movieThumbnailDTOs.add(movieThumbnailDTO);
+		}
+		return movieThumbnailDTOs;
+		
 	}
 	
 	@RequestMapping(value="/movies/{movieId}")
