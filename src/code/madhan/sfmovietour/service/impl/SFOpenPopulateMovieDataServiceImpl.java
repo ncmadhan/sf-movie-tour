@@ -101,7 +101,7 @@ public class SFOpenPopulateMovieDataServiceImpl implements PopulateMovieDataServ
 			}
 			
 			populatedMovieList = populateMovieDataHelper.populateAdditionalMovieInfo(populatedMovieList);
-			populatedMovieList = populateMoviesShotNearby(populatedMovieList);
+			//populatedMovieList = populateMoviesShotNearby(populatedMovieList);
 			mongoOperation.insert(populatedMovieList, Movie.class);
 		}
 		
