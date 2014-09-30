@@ -35,13 +35,13 @@
 
 <body>
 
-    <!-- Navigation -->
+	<!-- Navigation -->
     <nav class="navbar navbar-inverse navbar-fixed-bottom" role="navigation">
         <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
+                    <span class="sr-only">SF Movie Tour</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
@@ -51,10 +51,7 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="#">Credits</a>
-                    </li>
-                    <li>
-                        <a href="#">Github Project</a>
+                        <a href="https://github.com/ncmadhan/sf-movie-tour">Github Project</a>
                     </li>
                     <li>
                         <a href="mailto:ncmadhan@gmail.com">Suggestions/Bugs/Feedback</a>
@@ -65,7 +62,7 @@
         </div>
         <!-- /.container -->
     </nav>
-
+	
     <!-- Page Content -->
     <div class="container home-container">
         <div class="row">
@@ -74,7 +71,7 @@
             </div>
             <div class="col-xs-6" >
                 <h1 class="home-title">San Francisco Movie Tour</h1>
-                <p class="home-subtitle">Explore movies shot in various locations across SF, from as long back as 1915</p>
+                <p class="home-subtitle">Explore movies shot in various locations across SF, from as long back as 1910</p>
 				<a class="btn btn-success home-button" href="/movies">Start Exploring</a>
             </div>
         </div>
