@@ -11,5 +11,8 @@ public class AppConstants {
 	
 	public static final String OMDB_API_ENDPOINT = "http://www.omdbapi.com/?t=";
 	
+	public static final String TMDB_API_FIND_BY_IMDB_ID = "http://api.themoviedb.org/3/find/{imdb-id}?api_key=212ab682d1afe93df0922f82d65f080a&external_source=imdb_id";
+	public static final String TMDB_POSTER_IMAGE_PREFIX = "http://image.tmdb.org/t/p/w500";
+	
 	public static final String GEO_JSON_TYPE_POINT = "Point";
 }

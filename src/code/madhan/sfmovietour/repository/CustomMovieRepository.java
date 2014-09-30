@@ -12,4 +12,6 @@ public interface CustomMovieRepository {
 	List<Movie> findAllMovies(int page, int pageSize, String filter, String sort);
 	
 	List<Movie> findMoviesNear(Double lat, Double lng);
+	
+	void updateMovie(Movie movie);
 }

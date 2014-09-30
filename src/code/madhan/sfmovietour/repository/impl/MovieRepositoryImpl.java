@@ -111,5 +111,11 @@ public class MovieRepositoryImpl implements CustomMovieRepository {
 		return movies;
 	}
 
+	@Override
+	public void updateMovie(Movie movie) {
+		operations.save(movie);
+		
+	}
+
 	
 }
